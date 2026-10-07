@@ -1,5 +1,9 @@
-import { ThemeToggle } from "@/components/theme-toggle";
+import FishSelect from "@/components/fish-select";
 
 export default function Home() {
-  return <div></div>;
+  return (
+    <div>
+      <FishSelect />
+    </div>
+  );
 }
