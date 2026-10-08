@@ -45,8 +45,11 @@ group :development do
   # gem "spring"
 end
 gem 'active_model_serializers'
+gem 'activerecord-postgis-adapter'
 gem 'csv'
 gem 'devise'
 gem 'devise-jwt'
 gem 'faker'
+gem 'faraday'
+gem 'json', '~> 2.7'
 gem 'kaminari'

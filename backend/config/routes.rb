@@ -19,4 +19,5 @@ Rails.application.routes.draw do
   end
 
   resources :fish, only: [:index]
+  resources :lakes, only: [:index]
 end
