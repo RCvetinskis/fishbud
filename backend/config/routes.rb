@@ -17,4 +17,6 @@ Rails.application.routes.draw do
     post 'refresh', to: 'auth#refresh'
     get 'me', to: 'auth#me'
   end
+
+  resources :fish, only: [:index]
 end
