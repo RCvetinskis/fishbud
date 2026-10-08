@@ -1,0 +1,2 @@
+class Lake < ApplicationRecord
+end

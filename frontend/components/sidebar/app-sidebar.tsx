@@ -11,7 +11,7 @@ import {
 
 import Link from "next/link";
 import { ThemeToggle } from "../theme-toggle";
-import { Fish } from "lucide-react";
+import { Fish, Map, PersonStanding } from "lucide-react";
 import UserDropdown from "./user-dropdown";
 
 export function AppSidebar() {
@@ -27,9 +27,21 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
+            <Link href={"map"}>
+              {" "}
+              <SidebarMenuButton>
+                <Map />
+                <span>Map</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
             <Link href={"profile"}>
               {" "}
-              <SidebarMenuButton>Profile</SidebarMenuButton>
+              <SidebarMenuButton>
+                <PersonStanding />
+                <span>Profile</span>
+              </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
         </SidebarMenu>

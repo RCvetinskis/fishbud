@@ -10,15 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_261_007_124_320) do
+ActiveRecord::Schema[7.0].define(version: 20_261_008_092_414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
+  enable_extension 'postgis'
 
   create_table 'fish', force: :cascade do |t|
     t.string 'name', null: false
     t.string 'image_url'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+  end
+
+  create_table 'lakes', force: :cascade do |t|
+    t.string 'name'
+    t.decimal 'area'
+    t.decimal 'latitude'
+    t.decimal 'longitude'
+    t.text 'shape'
+    t.string 'external_id'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.geometry 'geometry', limit: { srid: 3346, type: 'multi_polygon' }
+    t.index ['geometry'], name: 'index_lakes_on_geometry', using: :gist
   end
 
   create_table 'refresh_tokens', force: :cascade do |t|
