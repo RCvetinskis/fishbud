@@ -18,30 +18,43 @@ module Lakes
       Lake.find_or_initialize_by(external_id: data['_id']).tap do |lake|
         lake.name = data['pavadinimas']
         lake.area = data['pav_plotas']
+        lake.length = data['ilgis']
+        lake.width = data['plotis']
+        lake.shoreline_length = data['linijos_ilgis']
 
-        if data['koord'].present?
-          latitude, longitude = parse_point(data['koord'])
-
-          lake.latitude = latitude
-          lake.longitude = longitude
-        end
+        lake.latitude, lake.longitude = parse_point(data['koord']) if data['koord'].present?
 
         lake.shape = data['shape']
-
         lake.save!
       end
     end
 
     def self.parse_point(point)
-      coordinates = point
-                    .sub(/^POINT\s*\(/i, '')
-                    .sub(/\)$/, '')
-                    .split
-                    .map(&:to_f)
+      northing, easting = point
+                          .sub(/^POINT\s*\(/i, '')
+                          .sub(/\)$/, '')
+                          .split
+                          .map(&:to_f)
 
-      x, y = coordinates
+      sql = Lake.sanitize_sql_array([
+                                      <<~SQL,
+                                        SELECT
+                                          ST_Y(coords) AS latitude,
+                                          ST_X(coords) AS longitude
+                                        FROM (
+                                          SELECT ST_Transform(
+                                            ST_SetSRID(ST_MakePoint(?, ?), 3346),
+                                            4326
+                                          ) AS coords
+                                        ) transformed
+                                      SQL
+                                      easting,
+                                      northing
+                                    ])
 
-      [x, y]
+      result = Lake.connection.select_one(sql)
+
+      [result['latitude'].to_f, result['longitude'].to_f]
     end
 
     private_class_method :save_lake, :parse_point

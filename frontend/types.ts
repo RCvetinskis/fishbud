@@ -22,6 +22,30 @@ export type TFish = {
   name: string;
   image_url?: string;
 };
+
+export type TLake = {
+  id: number;
+  name: string;
+  latitude: string;
+  longitude: string;
+
+  area?: string;
+  width?: string;
+  length?: string;
+  shoreline_length?: string;
+};
+
+export type TCatch = {
+  id: number;
+  fish_id: number;
+  lake_id: number;
+  user_id: number;
+  caught_by: string;
+  fish_name: string;
+
+  lure?: string;
+  description?: string;
+} & TCrudDate;
 export class ApiError extends Error {
   data: any;
   status: number;
