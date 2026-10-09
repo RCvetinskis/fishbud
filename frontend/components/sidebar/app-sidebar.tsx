@@ -2,13 +2,11 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-
 import Link from "next/link";
 import { ThemeToggle } from "../theme-toggle";
 import { Fish, Map, PersonStanding } from "lucide-react";
@@ -27,7 +25,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href={"map"}>
+            <Link href={"/map"}>
               {" "}
               <SidebarMenuButton>
                 <Map />
@@ -36,7 +34,7 @@ export function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href={"profile"}>
+            <Link href={"/profile"}>
               {" "}
               <SidebarMenuButton>
                 <PersonStanding />

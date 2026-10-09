@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
+import Link from "next/link";
 
 type LakePopoverPosition = {
   x: number;
@@ -32,14 +33,16 @@ const LakePopover = ({
             top: lakePopoverPosition.y - 10,
           }}
         >
-          <div className="rounded-xl border bg-background p-4 shadow-xl">
+          <div className="rounded-xl border bg-background p-2 shadow-xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="font-semibold">
-                  {selectedLake.name ?? "Unknown lake"}
-                </h3>
+                <Link href={`/lakes/${selectedLake.id}`}>
+                  <h3 className="hover:shadow  py-1 rounded text-sm  transition-all font-semibold">
+                    {selectedLake.name ?? "Unknown lake"}
+                  </h3>
+                </Link>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {selectedLake.type ?? "Lake"}
                 </p>
               </div>
@@ -55,7 +58,7 @@ const LakePopover = ({
               </Button>
             </div>
 
-            <div className="mt-4 space-y-2 text-sm">
+            <div className="mt-4 space-y-2 text-xs">
               {selectedLake.area && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Area</span>

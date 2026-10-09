@@ -1,55 +1,54 @@
 "use client";
+import * as z from "zod";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/toast";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { signUpSchema } from "@/schemas/user-schemas";
-import { useRouter } from "next/navigation";
-import { api } from "@/handlers/api-handler";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-export function RegisterCard() {
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { caughtFishSchema } from "@/schemas/fish-schema";
+import FishSelect from "@/components/fish-select";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+type Props = {
+  lake_id: string;
+  onSuccess: () => void;
+};
+const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<z.infer<typeof caughtFishSchema>>({
+    resolver: zodResolver(caughtFishSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
+      fish_id: undefined,
+      description: "",
+      lure: "",
     },
   });
-
-  async function onSubmit(data: z.infer<typeof signUpSchema>) {
+  async function onSubmit(data: z.infer<typeof caughtFishSchema>) {
     try {
-      const response = await api.post("/signup", {
-        user: {
-          email: data.email,
-          username: data.username,
-          password: data.password,
-          password_confirmation: data.password,
+      const response = await axios.post("/api/catches", {
+        catch: {
+          fish_id: data.fish_id,
+          lake_id,
+          description: data.description,
+          lure: data.lure,
         },
       });
+      onSuccess();
       toast.add({
         title: response.data.message,
         type: "success",
       });
-
-      router.push("/auth/signin");
+      router.refresh();
     } catch (error: any) {
       const errorMessage = error.message || "Registry Failed";
 
@@ -61,56 +60,38 @@ export function RegisterCard() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Register to Fish Bud</CardTitle>
-        <CardDescription>
-          Enter your information to register to Fish Bud!
-        </CardDescription>
-        <CardAction>
-          <Link href={"/auth/signin"}>
-            <Button variant="link">Sign In</Button>
-          </Link>
-        </CardAction>
-      </CardHeader>
+    <Card className="">
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-3">
             <FieldGroup>
               <Controller
-                name="email"
+                name="fish_id"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input
-                      {...field}
-                      aria-invalid={fieldState.invalid}
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                    />
+                    <FieldLabel>Fish</FieldLabel>
+
+                    <FishSelect value={field.value} onChange={field.onChange} />
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
                   </Field>
                 )}
               />
-
               <Controller
-                name="username"
+                name="lure"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="username">Username</FieldLabel>
+                    <FieldLabel htmlFor="lure">Lure</FieldLabel>
                     <Input
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      id="username"
+                      id="lure"
                       type="text"
-                      placeholder="John"
-                      required
+                      placeholder="Boil"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -120,17 +101,16 @@ export function RegisterCard() {
               />
 
               <Controller
-                name="password"
+                name="description"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input
+                    <FieldLabel htmlFor="description">Description</FieldLabel>
+                    <Textarea
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      id="password"
-                      type="password"
-                      required
+                      id="description"
+                      placeholder="Caught at 6 meters depth"
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -140,7 +120,7 @@ export function RegisterCard() {
               />
 
               <Button type="submit" className="w-full">
-                Register
+                Submit
               </Button>
             </FieldGroup>
           </div>
@@ -148,4 +128,6 @@ export function RegisterCard() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default CaughtFishForm;
