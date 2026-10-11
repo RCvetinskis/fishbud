@@ -1,5 +1,4 @@
 "use client";
-import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "@/components/ui/toast";
@@ -10,12 +9,10 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signUpSchema } from "@/schemas/user-schemas";
 import { useRouter } from "next/navigation";

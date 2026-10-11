@@ -9,9 +9,5 @@ const Map = dynamic(() => import("../map/map-view"), {
 });
 
 export default function MapWrapper() {
-  return (
-    <div className="w-full h-full">
-      <Map />;
-    </div>
-  );
+  return <Map />;
 }

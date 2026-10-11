@@ -23,8 +23,8 @@ class ApplicationController < ActionController::API
   private
 
   def set_locale
-    locale = if current_api_v1_user&.locale.present?
-               current_api_v1_user.locale
+    locale = if current_user&.locale.present?
+               current_user.locale
 
              else
                I18n.default_locale
@@ -118,7 +118,7 @@ class ApplicationController < ActionController::API
   end
 
   def authorize!(permission_name, resource_id = nil)
-    unless current_api_v1_user.can?(permission_name, resource_id)
+    unless current_user.can?(permission_name, resource_id)
       render_error(I18n.t('messages.unauthorized'), 403)
       return false
     end

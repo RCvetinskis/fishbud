@@ -49,6 +49,7 @@ const MapView = () => {
     x: number;
     y: number;
   } | null>(null);
+
   useEffect(() => {
     if (!navigator.geolocation) {
       console.error("Geolocation is not supported by this browser.");
@@ -86,7 +87,7 @@ const MapView = () => {
   }, []);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative z-0 h-full w-full">
       <MapContainer
         center={[55.1694, 23.8813]}
         zoom={7}
