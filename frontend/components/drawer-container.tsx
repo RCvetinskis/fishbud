@@ -19,6 +19,7 @@ type Props = {
   description?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  footer?: React.ReactNode;
 };
 
 const DrawerContainer = ({
@@ -28,16 +29,19 @@ const DrawerContainer = ({
   description,
   open,
   onOpenChange,
+  footer,
 }: Props) => {
   return (
     <Drawer open={open} onOpenChange={onOpenChange} showSwipeHandle>
       <DrawerTrigger
         render={<Button variant="secondary">{triggerTitle}</Button>}
       />
+
       <DrawerContent>
-        <DrawerHeader className="relative">
-          <DrawerTitle>{title}</DrawerTitle>{" "}
+        <DrawerHeader className="relative shrink-0 pr-12">
+          <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
+
           <DrawerClose
             render={
               <Button
@@ -46,16 +50,21 @@ const DrawerContainer = ({
                 size="icon"
                 aria-label="Close drawer"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               </Button>
             }
           />
         </DrawerHeader>
-        <div className="flex-1 p-4">
-          <div className="rounded-2xl bg-muted group-data-[swipe-axis=x]/drawer-popup:size-full group-data-[swipe-axis=y]/drawer-popup:h-80 group-data-[swipe-axis=y]/drawer-popup:w-full">
-            {children}
-          </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
+          {children}
         </div>
+
+        {footer && (
+          <div className="shrink-0 border-t bg-background px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+            {footer}
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   );

@@ -7,17 +7,24 @@ export async function POST(request: NextRequest) {
 
   if (!accessToken) {
     return NextResponse.json(
-      { error: true, message: "Unauthorized" },
+      { error: true, message: "Unauthorized: missing access token" },
       { status: 401 },
     );
   }
 
   try {
-    const body = await request.json();
+    const incomingForm = await request.formData();
+    const lakeId = incomingForm.get("catch[lake_id]");
+
+    const outgoingForm = new FormData();
+
+    incomingForm.forEach((value, key) => {
+      outgoingForm.append(key, value);
+    });
 
     const response = await axios.post(
       `${process.env.RAILS_API_URL}/catches`,
-      body,
+      outgoingForm,
       {
         headers: {
           Authorization: accessToken.startsWith("Bearer ")
@@ -25,20 +32,34 @@ export async function POST(request: NextRequest) {
             : `Bearer ${accessToken}`,
           Accept: "application/json",
         },
+        maxBodyLength: Infinity,
       },
     );
-    console.log("CATCH:", body.catch);
-    revalidatePath(`/lakes/${body.catch.lake_id}`);
-    return NextResponse.json(response.data);
-  } catch (error: any) {
+
+    if (lakeId) {
+      revalidatePath(`/lakes/${lakeId}`);
+    }
+
+    return NextResponse.json(response.data, {
+      status: response.status,
+    });
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return NextResponse.json(
+        {
+          error: true,
+          message:
+            error.response?.data?.message ??
+            error.response?.data?.errors?.join?.(", ") ??
+            error.message,
+        },
+        { status: error.response?.status ?? 500 },
+      );
+    }
+
     return NextResponse.json(
-      {
-        error: true,
-        message: error.response?.data?.message || "Something went wrong",
-      },
-      {
-        status: error.response?.status || 401,
-      },
+      { error: true, message: "Something went wrong" },
+      { status: 500 },
     );
   }
 }

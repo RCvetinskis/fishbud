@@ -1,5 +1,5 @@
 class LakesController < ApplicationController
-  before_action :set_lake, only: %i[show]
+  before_action :set_lake, only: %i[show lake_statistics]
 
   def show
     if @lake
@@ -40,6 +40,12 @@ class LakesController < ApplicationController
       type: 'FeatureCollection',
       features: features
     }
+  end
+
+  def lake_statistics
+    return render_not_found unless @lake
+
+    render_success(Catches::Statistics.call(lake_id: @lake.id))
   end
 
   private

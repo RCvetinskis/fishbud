@@ -43,6 +43,9 @@ export type TCatch = {
   caught_by: string;
   fish_name: string;
 
+  weight?: string;
+  length?: string;
+  image_url?: string;
   lure?: string;
   description?: string;
 } & TCrudDate;

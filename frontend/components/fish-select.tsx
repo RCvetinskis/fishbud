@@ -17,7 +17,7 @@ import LoadingSpinner from "./loading-spinner";
 
 type Props = {
   value?: number;
-  onChange: (value: number) => void;
+  onChange: (value: number | undefined) => void;
 };
 
 const FishSelect = ({ value, onChange }: Props) => {
@@ -49,7 +49,7 @@ const FishSelect = ({ value, onChange }: Props) => {
       value={selectedFish?.name ?? ""}
       onValueChange={(name) => {
         const fish = fishes.find((item) => item.name === name);
-        if (fish) onChange(fish.id);
+        onChange(fish?.id);
       }}
     >
       <ComboboxInput disabled={loading} placeholder="Select a fish" />

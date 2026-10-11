@@ -20,6 +20,10 @@ Rails.application.routes.draw do
 
   resources :fish, only: [:index]
   resources :lakes, only: %i[index show] do
+    member do
+      get :lake_statistics
+    end
+
     get :catches, to: 'catches#lake_catches'
   end
 

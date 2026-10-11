@@ -9,4 +9,24 @@ export const caughtFishSchema = z.object({
 
   description: z.string().optional(),
   lure: z.string().optional(),
+
+  weight: z
+    .string()
+    .optional()
+    .refine(
+      (value: any) =>
+        !value || (Number.isFinite(Number(value)) && Number(value) > 0),
+      "Weight must be a positive number",
+    ),
+
+  length: z
+    .string()
+    .optional()
+    .refine(
+      (value: any) =>
+        !value || (Number.isFinite(Number(value)) && Number(value) > 0),
+      "Length must be a positive number",
+    ),
+
+  image: z.file().optional(),
 });
