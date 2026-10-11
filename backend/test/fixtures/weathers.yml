@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  catch: one
+  temperature: 9.99
+  feels_like: 9.99
+  humidity: 1
+  precipitation: 9.99
+  rain: 9.99
+  precipitation_probability: 1
+  cloud_cover: 1
+  wind_speed: 9.99
+  wind_direction: 1
+  wind_gusts: 9.99
+  pressure: 9.99
+  weather_code: 1
+  observed_at: 2026-10-11 20:27:48
+  source: MyString
+
+two:
+  catch: two
+  temperature: 9.99
+  feels_like: 9.99
+  humidity: 1
+  precipitation: 9.99
+  rain: 9.99
+  precipitation_probability: 1
+  cloud_cover: 1
+  wind_speed: 9.99
+  wind_direction: 1
+  wind_gusts: 9.99
+  pressure: 9.99
+  weather_code: 1
+  observed_at: 2026-10-11 20:27:48
+  source: MyString

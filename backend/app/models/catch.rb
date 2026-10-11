@@ -2,6 +2,8 @@ class Catch < ApplicationRecord
   belongs_to :fish
   belongs_to :user
   belongs_to :lake
+
+  has_one :weather, dependent: :destroy
   has_one_attached :image
 
   validates :fish, presence: true

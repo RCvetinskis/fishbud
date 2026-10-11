@@ -6,6 +6,7 @@ class CatchesController < ApplicationController
     catch = current_user.catches.new(catch_params)
 
     if catch.save
+      WeatherServices::FetchForCatch.call(catch: catch)
       render_success(catch)
     else
       render_error(catch.errors.full_messages.first)

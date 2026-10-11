@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_11_142943) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_11_172748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
@@ -108,10 +108,32 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_11_142943) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  create_table "weathers", force: :cascade do |t|
+    t.bigint "catch_id", null: false
+    t.decimal "temperature", precision: 5, scale: 2
+    t.decimal "feels_like", precision: 5, scale: 2
+    t.integer "humidity"
+    t.decimal "precipitation", precision: 7, scale: 2
+    t.decimal "rain", precision: 7, scale: 2
+    t.integer "precipitation_probability"
+    t.integer "cloud_cover"
+    t.decimal "wind_speed", precision: 6, scale: 2
+    t.integer "wind_direction"
+    t.decimal "wind_gusts", precision: 6, scale: 2
+    t.decimal "pressure", precision: 7, scale: 2
+    t.integer "weather_code"
+    t.datetime "observed_at", null: false
+    t.string "source", default: "open_meteo", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["catch_id"], name: "index_weathers_on_catch_id", unique: true
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "catches", "fish"
   add_foreign_key "catches", "lakes"
   add_foreign_key "catches", "users"
   add_foreign_key "refresh_tokens", "users"
+  add_foreign_key "weathers", "catches"
 end

@@ -48,7 +48,37 @@ export type TCatch = {
   image_url?: string;
   lure?: string;
   description?: string;
+  weather?: {
+    temperature: number | null;
+    wind_speed: number | null;
+    wind_direction: number | null;
+    pressure: number | null;
+  } | null;
 } & TCrudDate;
+
+export type TWeatherStatistics = {
+  total_catches: number;
+  best_temperature: {
+    min: number;
+    max: number;
+    catch_count: number;
+  } | null;
+  best_wind_speed: {
+    min: number;
+    max: number;
+    catch_count: number;
+  } | null;
+  best_wind_direction: {
+    direction: string;
+    catch_count: number;
+  } | null;
+  best_pressure: {
+    min: number;
+    max: number;
+    catch_count: number;
+  } | null;
+};
+
 export class ApiError extends Error {
   data: any;
   status: number;

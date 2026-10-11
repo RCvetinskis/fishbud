@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ThemeToggle } from "../theme-toggle";
-import { Fish, Map, PersonStanding } from "lucide-react";
+import { ChartColumn, Fish, Map, PersonStanding } from "lucide-react";
 import UserDropdown from "./user-dropdown";
 
 export function AppSidebar() {
@@ -33,6 +33,17 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <Link href={"/statistics"}>
+              {" "}
+              <SidebarMenuButton>
+                <ChartColumn />
+                <span>Statistics</span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+
           <SidebarMenuItem>
             <Link href={"/profile"}>
               {" "}
