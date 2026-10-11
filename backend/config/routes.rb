@@ -18,6 +18,11 @@ Rails.application.routes.draw do
     get 'me', to: 'auth#me'
   end
 
+  namespace :statistics do
+    resources :weather, only: [:index]
+    get 'weather/current_user_statistics',
+        to: 'weather#current_user_statistics'
+  end
   resources :fish, only: [:index]
   resources :lakes, only: %i[index show] do
     member do

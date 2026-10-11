@@ -26,7 +26,6 @@ const LakePage = async ({ params, searchParams }: Props) => {
     getLakeStatistics(id),
   ]);
 
-  console.log("STATISTICS:", statistics);
   if (!lake) return <h1>Lake not found</h1>;
 
   const query = await searchParams;
