@@ -40,4 +40,6 @@ Rails.application.routes.draw do
       get :active
     end
   end
+
+  resources :spots, only: %i[index create]
 end

@@ -25,6 +25,7 @@ class Catch < ApplicationRecord
             allow_blank: true
 
   validate :image_must_be_an_image
+  validate :caught_at_cannot_be_in_the_future
 
   scope :heaviest_first, lambda {
     order(Arel.sql('weight DESC NULLS LAST'))
@@ -41,6 +42,13 @@ class Catch < ApplicationRecord
   }
 
   private
+
+  def caught_at_cannot_be_in_the_future
+    return if caught_at.blank?
+    return unless caught_at > Time.current
+
+    errors.add(:caught_at, "can't be in the future")
+  end
 
   def image_must_be_an_image
     return unless image.attached?
