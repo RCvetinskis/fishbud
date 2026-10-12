@@ -1,4 +1,5 @@
 import { api } from "@/handlers/api-handler";
+import { Period } from "@/stores/statistics-store";
 import { TWeatherStatistics } from "@/types";
 import axios from "axios";
 import { cookies } from "next/headers";
@@ -36,3 +37,56 @@ export const getCurrentUserWeatherStatistics =
       return null;
     }
   };
+
+export type BiggestCatch = {
+  id: number;
+  fish: string | null;
+  username: string | null;
+  length: number | null;
+  weight: number | null;
+  lake_name: string;
+  lake_id: number;
+  date: string | null;
+};
+export type LakeCatchStatistics = {
+  data: {
+    average_temperature: string | null;
+    catches_by_date: {
+      date: string;
+      count: number;
+    }[];
+    catches_by_lake: {
+      lake: string;
+      count: number;
+    }[];
+    catches_by_weather: {
+      temperature: string | null;
+      wind_direction: number | null;
+      count: number;
+    }[];
+    top_lake: {
+      lake: string;
+      count: number;
+    } | null;
+    top_weather: {
+      temperature: string | null;
+      wind_direction: number | null;
+      count: number;
+    } | null;
+    total_catches: number;
+    biggest_catches: BiggestCatch[];
+  };
+};
+export const getLakeCatchStatistics = async (
+  period: Period = "7d",
+): Promise<LakeCatchStatistics | null> => {
+  try {
+    const response = await api.get("/statistics/lake_catches", {
+      params: { period },
+    });
+
+    return response.data;
+  } catch (error) {
+    return null;
+  }
+};
