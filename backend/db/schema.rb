@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_261_012_104_142) do
+ActiveRecord::Schema[7.0].define(version: 20_261_012_124_312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
   enable_extension 'postgis'
@@ -109,6 +109,19 @@ ActiveRecord::Schema[7.0].define(version: 20_261_012_104_142) do
     t.index ['user_id'], name: 'index_refresh_tokens_on_user_id'
   end
 
+  create_table 'spots', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'lake_id', null: false
+    t.string 'name', null: false
+    t.text 'description'
+    t.decimal 'latitude', precision: 10, scale: 7, null: false
+    t.decimal 'longitude', precision: 10, scale: 7, null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['lake_id'], name: 'index_spots_on_lake_id'
+    t.index ['user_id'], name: 'index_spots_on_user_id'
+  end
+
   create_table 'users', force: :cascade do |t|
     t.string 'email', default: '', null: false
     t.string 'encrypted_password', default: '', null: false
@@ -155,5 +168,7 @@ ActiveRecord::Schema[7.0].define(version: 20_261_012_104_142) do
   add_foreign_key 'fishing_trips', 'lakes'
   add_foreign_key 'fishing_trips', 'users'
   add_foreign_key 'refresh_tokens', 'users'
+  add_foreign_key 'spots', 'lakes'
+  add_foreign_key 'spots', 'users'
   add_foreign_key 'weathers', 'catches'
 end

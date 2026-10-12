@@ -1,23 +1,33 @@
 "use client";
 
 import { GeoJSON, useMap } from "react-leaflet";
-import type { Feature, FeatureCollection } from "geojson";
+import type {
+  Feature,
+  FeatureCollection,
+  Polygon,
+  MultiPolygon,
+} from "geojson";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import L from "leaflet";
+
+import type { SelectedLake } from "./map-view";
+
 type Props = {
   lakes: FeatureCollection;
   onSelect: (
-    lake: any,
+    lake: SelectedLake,
     position: {
       x: number;
       y: number;
     },
   ) => void;
 };
+
 const getLakeStyle = (feature: Feature, lakeId?: string) => {
   const id = feature.properties?.id ?? feature.id;
   const isSelected = lakeId != null && String(id) === lakeId;
+
   return {
     color: isSelected ? "#15803d" : "#2563eb",
     weight: isSelected ? 3 : 1,
@@ -25,6 +35,7 @@ const getLakeStyle = (feature: Feature, lakeId?: string) => {
     fillOpacity: isSelected ? 0.7 : 0.4,
   };
 };
+
 export const LakeLayer = ({ lakes, onSelect }: Props) => {
   const map = useMap();
   const params = useParams<{ id?: string }>();
@@ -58,20 +69,38 @@ export const LakeLayer = ({ lakes, onSelect }: Props) => {
       }
       onEachFeature={(feature, layer) => {
         const properties = feature.properties ?? {};
+
         layer.bindTooltip(
-          `<strong>${properties.name ?? "Unknown lake"}</strong> <br /> Area: ${properties.area ?? "Unknown"} ha`,
+          `<strong>${properties.name ?? "Unknown lake"}</strong><br />Area: ${properties.area ?? "Unknown"} ha`,
           { sticky: true },
         );
+
         layer.on({
           mouseover: (event) => {
-            event.target.setStyle({ weight: 3, fillOpacity: 0.7 });
+            event.target.setStyle({
+              weight: 3,
+              fillOpacity: 0.7,
+            });
           },
+
           mouseout: (event) => {
             event.target.setStyle(getLakeStyle(feature as Feature, lakeId));
           },
+
           click: (event) => {
             const point = map.latLngToContainerPoint(event.latlng);
-            onSelect(properties, { x: point.x, y: point.y });
+
+            const selectedLake = {
+              ...feature,
+              id: Number(properties.id ?? feature.id),
+              name: properties.name ?? properties.pavadinimas,
+              area: properties.area ?? properties.pav_plotas ?? null,
+            } as SelectedLake;
+
+            onSelect(selectedLake, {
+              x: point.x,
+              y: point.y,
+            });
           },
         });
       }}
