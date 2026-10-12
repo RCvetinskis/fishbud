@@ -23,7 +23,6 @@ type Props = {
 };
 
 const CaughtFishCard = ({ caughtFish }: Props) => {
-  console.log(caughtFish);
   const hasImage = Boolean(caughtFish.image_url);
   const hasMeasurements =
     caughtFish.weight != null || caughtFish.length != null;
@@ -226,7 +225,7 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
         <div className="mt-auto flex items-center gap-1.5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
           <CalendarDays className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span className="min-w-0 flex-1 truncate">
-            Caught {caughtFish.created_at}
+            Caught {caughtFish.caught_at}
           </span>
 
           {caughtFish.updated_at !== caughtFish.created_at && (

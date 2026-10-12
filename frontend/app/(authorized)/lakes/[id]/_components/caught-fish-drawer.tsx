@@ -6,9 +6,10 @@ import CaughtFishForm from "./caught-fish-form";
 
 type Props = {
   lake_id: string;
+  fishing_trip_id?: number;
 };
 
-const CaughtFishDrawer = ({ lake_id }: Props) => {
+const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,7 +21,11 @@ const CaughtFishDrawer = ({ lake_id }: Props) => {
       description="Select caught fish, describe bait/lure and add a picture if you want to."
     >
       <div className="p-2">
-        <CaughtFishForm lake_id={lake_id} onSuccess={() => setOpen(false)} />
+        <CaughtFishForm
+          lake_id={lake_id}
+          fishing_trip_id={fishing_trip_id}
+          onSuccess={() => setOpen(false)}
+        />
       </div>
     </DrawerContainer>
   );

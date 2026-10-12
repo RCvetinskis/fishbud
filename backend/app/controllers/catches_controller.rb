@@ -13,55 +13,27 @@ class CatchesController < ApplicationController
     end
   end
 
-  def lake_catches
-    return render_not_found unless @lake
+def lake_catches
+  return render_not_found unless @lake
 
-    catches = @lake.catches
-    catches = catches.where(fish_id: params[:fish_id]) if params[:fish_id].present?
+  catches = Catches::Search.call(lake: @lake, params: params)
+  catches = catches.page(params[:page]).per(per_page)
 
-    if params[:date_from].present?
-      catches = catches.where(
-        'created_at >= ?',
-        Date.iso8601(params[:date_from]).beginning_of_day
-      )
-    end
-
-    if params[:date_to].present?
-      catches = catches.where(
-        'created_at <= ?',
-        Date.iso8601(params[:date_to]).end_of_day
-      )
-    end
-
-    catches = case params[:sort_by]
-              when 'oldest'
-                catches.order(created_at: :asc)
-              when 'heaviest'
-                catches.heaviest_first
-              when 'lightest'
-                catches.order(Arel.sql('weight ASC NULLS LAST'))
-              when 'longest'
-                catches.longest_first
-              when 'shortest'
-                catches.order(Arel.sql('length ASC NULLS LAST'))
-              else
-                catches.order(created_at: :desc)
-              end
-
-    catches = catches.page(params[:page]).per(per_page)
-
-    render_success(
-      {
-        result: serialize_collection(catches, CatchSerializer),
-        meta: pagination_dict(catches)
-      }
-    )
-  end
+  render_success(
+    {
+      result: serialize_collection(catches, CatchSerializer),
+      meta: pagination_dict(catches)
+    }
+  )
+rescue Date::Error
+  render_error('Invalid date filter. Use YYYY-MM-DD.')
+end
 
   private
 
   def catch_params
-    params.require(:catch).permit(:fish_id, :lake_id, :description, :lure, :weight, :length, :image)
+    params.require(:catch).permit(:fish_id, :lake_id, :fishing_trip_id, :description, :lure, :weight, :length, :image,
+                                  :caught_at)
   end
 
   def set_lake

@@ -30,7 +30,14 @@ Rails.application.routes.draw do
     end
 
     get :catches, to: 'catches#lake_catches'
+    get :fishing_trips, to: 'fishing_trips#lake_fishing_trips'
   end
 
   resources :catches, only: %i[create]
+
+  resources :fishing_trips, only: %i[create update] do
+    collection do
+      get :active
+    end
+  end
 end

@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Fish, Weight, Ruler, Trophy } from "lucide-react";
 
 type Props = {
+  totalCatches?: number;
   mostCatches?: {
     date: string;
     count: number;
@@ -32,12 +33,21 @@ const formatDate = (date?: string) => {
 };
 
 const LakeStatistics = ({
+  totalCatches,
   mostCatches,
   heaviestFish,
   longestFish,
   mostCommonFish,
 }: Props) => {
   const statistics = [
+    {
+      title: "Total lake catches",
+      description: totalCatches
+        ? `${totalCatches} fish caught`
+        : "No catches recorded",
+      icon: Fish,
+    },
+
     {
       title: "Most catches",
       description: mostCatches

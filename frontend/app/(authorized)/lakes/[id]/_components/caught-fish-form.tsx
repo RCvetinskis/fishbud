@@ -19,12 +19,15 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/image-upload/image-upload";
+import { getLocalDateTime } from "@/lib/utils";
+import { getErrorMessage } from "@/lib/axios-helper";
 
 type Props = {
   lake_id: string;
+  fishing_trip_id?: number;
   onSuccess: () => void;
 };
-const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
+const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof caughtFishSchema>>({
     resolver: zodResolver(caughtFishSchema),
@@ -35,6 +38,7 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
       weight: "",
       length: "",
       image: undefined,
+      caught_at: getLocalDateTime(),
     },
   });
   async function onSubmit(data: z.infer<typeof caughtFishSchema>) {
@@ -64,6 +68,13 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
         formData.append("catch[image]", data.image);
       }
 
+      if (fishing_trip_id) {
+        formData.append("catch[fishing_trip_id]", String(fishing_trip_id));
+      }
+
+      if (data.caught_at) {
+        formData.append("catch[caught_at]", data.caught_at);
+      }
       const response = await axios.post("/api/catches", formData);
 
       onSuccess();
@@ -75,10 +86,8 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
 
       router.refresh();
     } catch (error: any) {
-      const errorMessage = error.message || "Registry Failed";
-
       toast.add({
-        title: errorMessage,
+        title: getErrorMessage(error),
         type: "error",
       });
     }
@@ -108,7 +117,7 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="lure">Lure / bait</FieldLabel>
+                  <FieldLabel htmlFor="lure">Lure / bait (optional)</FieldLabel>
                   <Input
                     {...field}
                     id="lure"
@@ -127,7 +136,9 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
+                  <FieldLabel htmlFor="weight">
+                    Weight (kg) (optional)
+                  </FieldLabel>
                   <Input
                     {...field}
                     value={field.value ?? ""}
@@ -150,7 +161,9 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="length">Length (cm)</FieldLabel>
+                  <FieldLabel htmlFor="length">
+                    Length (cm) (optional)
+                  </FieldLabel>
                   <Input
                     {...field}
                     value={field.value ?? ""}
@@ -167,14 +180,39 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
                 </Field>
               )}
             />
-
+            <Controller
+              name="caught_at"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="caught_at">
+                    Date and time caught (optional)
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="caught_at"
+                    type="datetime-local"
+                    value={field.value ?? ""}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Leave empty if you're not sure when you caught the fish.
+                  </p>
+                </Field>
+              )}
+            />
             <div className="md:col-span-2">
               <Controller
                 name="description"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="description">Description</FieldLabel>
+                    <FieldLabel htmlFor="description">
+                      Description (optional)
+                    </FieldLabel>
                     <Textarea
                       {...field}
                       id="description"
@@ -196,7 +234,7 @@ const CaughtFishForm = ({ lake_id, onSuccess }: Props) => {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="image">Photo</FieldLabel>
+                    <FieldLabel htmlFor="image">Photo (optional)</FieldLabel>
                     <ImageUpload
                       value={field.value ?? null}
                       onChange={field.onChange}
