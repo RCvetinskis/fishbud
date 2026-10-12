@@ -10,7 +10,7 @@ type Props = {
 
 const EmptyState = ({
   title = "No catches found",
-  description = "There are no catches matching your filters. Try changing your filters or check back later.",
+  description = "There are no data matching your filters. Try changing your filters or check back later.",
   onReset,
 }: Props) => {
   return (

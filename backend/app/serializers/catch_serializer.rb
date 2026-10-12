@@ -1,6 +1,6 @@
 class CatchSerializer < ActiveModel::Serializer
   attributes :id, :fish_name, :caught_by, :lure, :description, :created_at, :updated_at, :fish_id, :lake_id, :user_id,
-             :weight, :length, :image_url, :weather
+             :weight, :length, :image_url, :weather, :caught_at
 
   def fish_name
     object.fish.name.capitalize
@@ -8,6 +8,11 @@ class CatchSerializer < ActiveModel::Serializer
 
   def caught_by
     object.user.username.capitalize
+  end
+
+  def caught_at
+    time = object.caught_at || object.created_at
+    I18n.l(time, format: '%Y-%m-%d %H:%M')
   end
 
   def created_at

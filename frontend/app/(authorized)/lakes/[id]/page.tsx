@@ -7,11 +7,14 @@ import {
 import LakeInfoCard from "./_components/lake-info-card";
 import CaughtFishesList from "./_components/caught-fishes-list";
 import CaughtFishDrawer from "./_components/caught-fish-drawer";
-import CatchesFilter from "./_components/catches-filter";
+import CatchesFilter from "./_components/filters/catches-filter";
 import PaginationContainer from "@/components/pagination-container";
 import EmptyState from "@/components/empty-state";
 import LakeStatistics from "./_components/lake_statistics";
 import { Card } from "@/components/ui/card";
+import FishingTripStatuts from "./_components/fishing-trip-statuts";
+import ToggleList from "./_components/togglelist";
+import FishingTripsList from "./_components/fishing-trips-list";
 
 type Props = {
   params: Promise<{
@@ -29,15 +32,12 @@ const LakePage = async ({ params, searchParams }: Props) => {
   if (!lake) return <h1>Lake not found</h1>;
 
   const query = await searchParams;
-  const catchesParams = {
-    date_from:
-      typeof query.date_from === "string" ? query.date_from : undefined,
-    date_to: typeof query.date_to === "string" ? query.date_to : undefined,
-    sort_by: typeof query.sort_by === "string" ? query.sort_by : undefined,
-    page: typeof query.page === "string" ? query.page : undefined,
-    fish_id: typeof query.fish_id === "string" ? query.fish_id : undefined,
-  };
-  const data = await getLakeCatches(id, catchesParams);
+
+  const view =
+    typeof query.view === "string" && query.view === "fishing_trips"
+      ? "fishing_trips"
+      : "catches";
+
   return (
     <div className="space-y-4">
       <div className="flex w-full flex-wrap-reverse gap-2 md:flex-nowrap md:items-stretch">
@@ -49,63 +49,55 @@ const LakePage = async ({ params, searchParams }: Props) => {
           <MapWrapper />
         </div>
       </div>
+      <FishingTripStatuts lakeId={id} />
 
-      <div>
-        <LakeStatistics
-          mostCatches={
-            statistics?.most_catches
-              ? {
-                  date: statistics.most_catches.catch_date,
-                  count: statistics.most_catches.catches_count,
-                }
-              : null
-          }
-          heaviestFish={
-            statistics?.heaviest_fish
-              ? {
-                  date: statistics.heaviest_fish.catch_date,
-                  weight: statistics.heaviest_fish.heaviest_weight,
-                }
-              : null
-          }
-          longestFish={
-            statistics?.longest_fish
-              ? {
-                  date: statistics.longest_fish.catch_date,
-                  length: statistics.longest_fish.longest_length,
-                }
-              : null
-          }
-          mostCommonFish={
-            statistics?.most_common_fish
-              ? {
-                  fish_id: statistics.most_common_fish.fish_id,
-                  fish_name: statistics.most_common_fish.fish_name,
-                  catches_count: statistics.most_common_fish.catches_count,
-                }
-              : null
-          }
-        />
-      </div>
+      <LakeStatistics
+        totalCatches={statistics?.total_catches}
+        mostCatches={
+          statistics?.most_catches
+            ? {
+                date: statistics.most_catches.catch_date,
+                count: statistics.most_catches.catches_count,
+              }
+            : null
+        }
+        heaviestFish={
+          statistics?.heaviest_fish
+            ? {
+                date: statistics.heaviest_fish.catch_date,
+                weight: statistics.heaviest_fish.heaviest_weight,
+              }
+            : null
+        }
+        longestFish={
+          statistics?.longest_fish
+            ? {
+                date: statistics.longest_fish.catch_date,
+                length: statistics.longest_fish.longest_length,
+              }
+            : null
+        }
+        mostCommonFish={
+          statistics?.most_common_fish
+            ? {
+                fish_id: statistics.most_common_fish.fish_id,
+                fish_name: statistics.most_common_fish.fish_name,
+                catches_count: statistics.most_common_fish.catches_count,
+              }
+            : null
+        }
+      />
 
       <Card>
-        <CatchesFilter />
-        <CaughtFishDrawer lake_id={id} />
+        <ToggleList />
       </Card>
-      {data.result.length > 0 ? (
-        <div>
-          <div>
-            <CaughtFishesList catches={data.result} />
-          </div>
-          <footer className="my-4">
-            <PaginationContainer
-              currentPage={data.meta?.current_page ?? 1}
-              totalPages={data.meta?.total_pages ?? 1}
-            />
-          </footer>
-        </div>
+
+      {view === "catches" ? (
+        <>
+          <CaughtFishesList lakeId={id} searchParams={searchParams} />
+        </>
       ) : (
-        <EmptyState />
+        <FishingTripsList lakeId={lake.id} searchParams={searchParams} />
       )}
     </div>
   );

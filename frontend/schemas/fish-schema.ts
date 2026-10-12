@@ -29,4 +29,5 @@ export const caughtFishSchema = z.object({
     ),
 
   image: z.file().optional(),
+  caught_at: z.string().optional(),
 });

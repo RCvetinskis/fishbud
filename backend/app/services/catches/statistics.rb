@@ -7,13 +7,13 @@ module Catches
 
       days = catches
              .select(<<~SQL.squish)
-               DATE(created_at) AS catch_date,
+               DATE(COALESCE(caught_at, created_at)) AS catch_date,
                COUNT(*) AS catches_count,
                MAX(weight) AS heaviest_weight,
                MAX(length) AS longest_length,
                SUM(weight) AS total_weight
              SQL
-             .group('DATE(created_at)')
+             .group('DATE(COALESCE(caught_at, created_at))')
              .to_a
 
       most_common_fish = catches
@@ -28,6 +28,7 @@ module Catches
                          .first
 
       {
+        total_catches: catches.count,
         most_catches: days.max_by { |day| day.catches_count.to_i },
         heaviest_fish: days.select { |day| day.heaviest_weight.present? }
                            .max_by(&:heaviest_weight),

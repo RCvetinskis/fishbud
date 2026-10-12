@@ -3,7 +3,11 @@ require 'time'
 
 module WeatherServices
   class FetchForCatch
-    BASE_URL = 'https://api.open-meteo.com/v1/forecast'
+    FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
+    ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive'
+
+    FORECAST_PAST_DAYS = 90
+    FORECAST_FUTURE_DAYS = 15
 
     HOURLY_FIELDS = %w[
       temperature_2m
@@ -31,17 +35,27 @@ module WeatherServices
     def call
       return unless @catch.lake&.latitude && @catch.lake.longitude
 
-      response = Faraday.get(BASE_URL, {
-                               latitude: @catch.lake.latitude,
-                               longitude: @catch.lake.longitude,
-                               hourly: HOURLY_FIELDS.join(','),
-                               wind_speed_unit: 'kmh',
-                               past_days: 1,
-                               forecast_days: 1,
-                               timezone: Time.zone.tzinfo.name
-                             })
+      target_time = @catch.caught_at || @catch.created_at
+      return unless target_time
 
-      raise "Open-Meteo returned HTTP #{response.status}" unless response.success?
+      target_date = target_time.to_date
+      today = Time.zone.today
+
+      url, date_params = api_config(target_date, today)
+      return unless url
+
+      response = Faraday.get(
+        url,
+        {
+          latitude: @catch.lake.latitude,
+          longitude: @catch.lake.longitude,
+          hourly: HOURLY_FIELDS.join(','),
+          wind_speed_unit: 'kmh',
+          timezone: Time.zone.tzinfo.name
+        }.merge(date_params)
+      )
+
+      raise "Open-Meteo returned HTTP #{response.status}: #{response.body}" unless response.success?
 
       data = JSON.parse(response.body)
       hourly = data.fetch('hourly')
@@ -50,11 +64,14 @@ module WeatherServices
       return if times.empty?
 
       index = times.each_index.min_by do |i|
-        (Time.strptime(times[i], '%Y-%m-%dT%H:%M').utc - @catch.created_at.utc).abs
+        weather_time = Time.zone.parse(times[i])
+        (weather_time - target_time).abs
       end
 
+      observed_at = Time.zone.parse(times[index])
+
       attributes = {
-        observed_at: Time.strptime(times[index], '%Y-%m-%dT%H:%M').utc,
+        observed_at: observed_at,
         source: 'open_meteo',
         temperature: hourly.dig('temperature_2m', index),
         feels_like: hourly.dig('apparent_temperature', index),
@@ -73,11 +90,51 @@ module WeatherServices
       @catch.create_weather!(attributes)
     rescue StandardError => e
       Rails.logger.warn(
-        "[Weather::FetchForCatch] Catch ##{@catch.id}: " \
+        "[WeatherServices::FetchForCatch] Catch ##{@catch.id}: " \
         "#{e.class}: #{e.message}"
       )
 
       nil
+    end
+
+    private
+
+    def api_config(target_date, today)
+      days_ago = (today - target_date).to_i
+      days_ahead = (target_date - today).to_i
+
+      if days_ago.between?(0, FORECAST_PAST_DAYS)
+        [
+          FORECAST_URL,
+          {
+            past_days: [days_ago + 1, 1].max,
+            forecast_days: 1
+          }
+        ]
+      elsif days_ahead.between?(0, FORECAST_FUTURE_DAYS)
+        [
+          FORECAST_URL,
+          {
+            past_days: 1,
+            forecast_days: days_ahead + 1
+          }
+        ]
+      elsif target_date < today
+        [
+          ARCHIVE_URL,
+          {
+            start_date: target_date.iso8601,
+            end_date: target_date.iso8601
+          }
+        ]
+      else
+        Rails.logger.warn(
+          "[WeatherServices::FetchForCatch] Catch ##{@catch.id}: " \
+          "Target date #{target_date} is outside the supported forecast range."
+        )
+
+        nil
+      end
     end
   end
 end

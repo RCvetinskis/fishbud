@@ -43,23 +43,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response.data, {
       status: response.status,
     });
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      return NextResponse.json(
-        {
-          error: true,
-          message:
-            error.response?.data?.message ??
-            error.response?.data?.errors?.join?.(", ") ??
-            error.message,
-        },
-        { status: error.response?.status ?? 500 },
-      );
-    }
-
+  } catch (error: any) {
     return NextResponse.json(
-      { error: true, message: "Something went wrong" },
-      { status: 500 },
+      {
+        error: true,
+        message: error.response?.data?.message,
+      },
+      {
+        status: error.response?.status,
+      },
     );
   }
 }

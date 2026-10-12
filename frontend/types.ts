@@ -43,6 +43,8 @@ export type TCatch = {
   caught_by: string;
   fish_name: string;
 
+  caught_at: string;
+
   weight?: string;
   length?: string;
   image_url?: string;
@@ -78,7 +80,38 @@ export type TWeatherStatistics = {
     catch_count: number;
   } | null;
 };
+export type TFishingTripWeather = {
+  temperature: number | null;
+  wind_speed: number | null;
+  description: string | null;
+};
 
+export type TFishingTripCatch = {
+  id: number;
+  fish_name: string;
+  caught_at: string | null;
+  weight: number | null;
+  length: number | null;
+  weather: TFishingTripWeather | null;
+};
+
+export type TFishingTrip = {
+  id: number;
+  lake_name: string;
+  started_at: string;
+  ended_at: string | null;
+  status: "in_progress" | "completed";
+  catches: TFishingTripCatch[];
+};
+
+export type TFishingTripStatistics = {
+  total_trips: number;
+  completed_trips: number;
+  in_progress_trips: number;
+  total_catches: number;
+  total_weight: number;
+  average_catches_per_trip: number;
+};
 export class ApiError extends Error {
   data: any;
   status: number;

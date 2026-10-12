@@ -1,5 +1,5 @@
 import { api } from "@/handlers/api-handler";
-import { TCatch, TLake, TMeta } from "@/types";
+import { TCatch, TFishingTrip, TLake, TMeta } from "@/types";
 
 export const getLakeById = async (id: string): Promise<TLake | null> => {
   try {
@@ -10,7 +10,7 @@ export const getLakeById = async (id: string): Promise<TLake | null> => {
   }
 };
 
-type TCatchResult = {
+export type TCatchResult = {
   result: TCatch[];
   meta: TMeta | null;
 };
@@ -40,6 +40,7 @@ export const getLakeCatches = async (
 };
 
 export type TLakeStatistics = {
+  total_catches?: number;
   most_catches: {
     catch_date: string;
     catches_count: number;
@@ -72,5 +73,33 @@ export const getLakeStatistics = async (
     return response.data.data;
   } catch {
     return null;
+  }
+};
+type TFishingTripResult = {
+  result: TFishingTrip[];
+  meta: TMeta | null;
+};
+
+export type FishingTripParams = {
+  page?: string;
+  per_page?: string;
+  sort_by?: string;
+  date_from?: string;
+  date_to?: string;
+};
+export const getLakeFishingTrips = async (
+  lakeId: number,
+  params: FishingTripParams,
+): Promise<TFishingTripResult> => {
+  try {
+    const response = await api.get(`/lakes/${lakeId}/fishing_trips`, {
+      params,
+    });
+    return response.data.data;
+  } catch {
+    return {
+      result: [],
+      meta: null,
+    };
   }
 };
