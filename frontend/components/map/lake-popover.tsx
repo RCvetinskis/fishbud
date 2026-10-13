@@ -40,7 +40,12 @@ const LakePopover = ({
 
   return (
     <div
-      className="lake-popover absolute z-[1000] w-72 -translate-x-1/2 -translate-y-full"
+      className="
+    lake-popover z-1200
+    fixed bottom-6 left-1/2 w-72  -translate-x-1/2 translate-y-0
+    sm:absolute sm:bottom-auto sm:left-[var(--pop-x)] sm:top-[var(--pop-y)]
+    sm:w-72 sm:-translate-y-full
+  "
       style={{
         left: lakePopoverPosition.x,
         top: lakePopoverPosition.y - 10,

@@ -112,6 +112,15 @@ export type TFishingTripStatistics = {
   total_weight: number;
   average_catches_per_trip: number;
 };
+
+export type TSpot = {
+  id: number;
+  lake_id: number;
+  name: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+};
 export class ApiError extends Error {
   data: any;
   status: number;

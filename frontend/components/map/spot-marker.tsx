@@ -26,17 +26,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getErrorMessage } from "@/lib/axios-helper";
 import axios from "axios";
+import { TSpot } from "@/types";
 
 const METER_RADIUS = 500;
-
-type Spot = {
-  id: number;
-  lake_id: number;
-  name: string;
-  description: string;
-  latitude: number;
-  longitude: number;
-};
 
 type Position = [number, number];
 
@@ -44,7 +36,9 @@ type SpotMarkerProps = {
   addingSpot: boolean;
   lakeId: number | null;
   lake: SelectedLake | null;
+  spots: TSpot[];
   onSpotPlaced: (position: Position) => void;
+  onSpotCreated: (spot: TSpot) => void;
 };
 
 type MapPlacementHandlerProps = {
@@ -150,23 +144,14 @@ const MapPlacementHandler = ({
   return null;
 };
 
-const getVisibleSpots = (spots: Spot[], zoom: number): Spot[] => {
-  if (zoom < 7) return [];
-  if (zoom < 9) return spots.slice(0, 20);
-
-  return spots;
-};
-
 const SpotMarker = ({
   addingSpot,
   lakeId,
   lake,
+  spots,
   onSpotPlaced,
+  onSpotCreated,
 }: SpotMarkerProps) => {
-  const map = useMap();
-
-  const [spots, setSpots] = useState<Spot[]>([]);
-  const [zoom, setZoom] = useState(map.getZoom());
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(
     null,
   );
@@ -174,35 +159,6 @@ const SpotMarker = ({
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useMapEvents({
-    zoomend() {
-      setZoom(map.getZoom());
-    },
-  });
-
-  useEffect(() => {
-    const fetchSpots = async () => {
-      try {
-        const response = await api.get("/spots");
-        const data = response.data.data ?? response.data.spots ?? response.data;
-
-        const loadedSpots: Spot[] = data.map((spot: Spot) => ({
-          ...spot,
-          id: Number(spot.id),
-          lake_id: Number(spot.lake_id),
-          latitude: Number(spot.latitude),
-          longitude: Number(spot.longitude),
-        }));
-
-        setSpots(loadedSpots);
-      } catch (error) {
-        console.error("Failed to load spots:", error);
-      }
-    };
-
-    fetchSpots();
-  }, []);
 
   const handlePlaceSpot = (position: Position) => {
     setSelectedPosition(position);
@@ -231,7 +187,7 @@ const SpotMarker = ({
       const createdSpot =
         response.data.data ?? response.data.spot ?? response.data;
 
-      const newSpot: Spot = {
+      const newSpot: TSpot = {
         id: Number(createdSpot.id),
         lake_id: Number(createdSpot.lake_id ?? lakeId),
         name: createdSpot.name,
@@ -243,9 +199,7 @@ const SpotMarker = ({
       if (!Number.isFinite(newSpot.id)) {
         throw new Error("The API response did not include a valid spot ID.");
       }
-
-      setSpots((current) => [...current, newSpot]);
-
+      onSpotCreated(newSpot);
       setSelectedPosition(null);
       onSpotPlaced(selectedPosition);
     } catch (err: unknown) {
@@ -255,8 +209,6 @@ const SpotMarker = ({
     }
   };
 
-  const visibleSpots = getVisibleSpots(spots, zoom);
-
   return (
     <>
       <MapPlacementHandler
@@ -265,7 +217,7 @@ const SpotMarker = ({
         onSpotPlaced={handlePlaceSpot}
       />
 
-      {visibleSpots.map((spot) => (
+      {spots.map((spot) => (
         <Marker
           key={spot.id}
           position={[spot.latitude, spot.longitude]}

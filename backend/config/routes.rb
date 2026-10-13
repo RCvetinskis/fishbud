@@ -30,7 +30,9 @@ Rails.application.routes.draw do
   end
 
   resources :fish, only: [:index]
+
   resources :lakes, only: %i[index show] do
+    collection { get :suggest }
     member do
       get :lake_statistics
     end
@@ -47,5 +49,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :spots, only: %i[index create]
+  resources :spots, only: %i[index create] do
+    collection { get :suggest }
+  end
 end
