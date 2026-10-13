@@ -15,11 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import type { LakeCatchStatistics } from "@/services/statistics-service";
+import { CatchesStatistics } from "@/services/statistics-service";
 
 type Props = {
-  data: LakeCatchStatistics["data"]["catches_by_weather"];
+  data: CatchesStatistics["catches_by_weather"];
 };
 
 const chartConfig = {
@@ -30,55 +29,84 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const CatchesByWeather = ({ data }: Props) => {
-  const weatherStats = data.map((item) => ({
-    weather: `${item.temperature ?? "Unknown"}°C · ${
-      item.wind_direction ?? "Unknown"
-    }°`,
-    catches: item.count,
-  }));
+  const weatherStats = data
+    .map((item) => ({
+      weather: `${item.temperature ?? "Unknown"}°C | ${
+        item.wind_direction ?? "Unknown"
+      } | ${item.pressure != null ? `${item.pressure} hPa` : "Unknown"}`,
+      temperature: item.temperature,
+      windDirection: item.wind_direction,
+      pressure: item.pressure,
+      catches: item.count,
+    }))
+    .sort((a, b) => b.catches - a.catches)
+    .slice(0, 10);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Catches by weather</CardTitle>
         <CardDescription>
-          Catch counts grouped by recorded temperature and wind direction.
+          Top 10 weather conditions by catch count.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         {weatherStats.length > 0 ? (
-          <ChartContainer config={chartConfig} className="h-[260px] w-full">
+          <ChartContainer config={chartConfig}>
             <BarChart
               accessibilityLayer
               data={weatherStats}
-              margin={{ top: 8, right: 8, bottom: 8, left: 0 }}
+              layout="vertical"
+              margin={{ top: 8, right: 16, bottom: 8, left: 8 }}
             >
-              <CartesianGrid vertical={false} />
+              <CartesianGrid horizontal={false} />
 
               <XAxis
-                dataKey="weather"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                interval={0}
-                tick={{ fontSize: 10 }}
-              />
-
-              <YAxis
+                type="number"
                 allowDecimals={false}
                 tickLine={false}
                 axisLine={false}
-                width={32}
               />
 
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <YAxis
+                type="category"
+                dataKey="weather"
+                tickLine={false}
+                axisLine={false}
+                width={190}
+                tick={{ fontSize: 11 }}
+              />
+
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, _name, item) => (
+                      <div className="flex flex-col gap-1">
+                        <span>{value} catches</span>
+                        <span>
+                          Temperature: {item.payload.temperature ?? "Unknown"}°C
+                        </span>
+                        <span>
+                          Wind: {item.payload.windDirection ?? "Unknown"}
+                        </span>
+                        <span>
+                          Pressure:{" "}
+                          {item.payload.pressure != null
+                            ? `${item.payload.pressure} hPa`
+                            : "Unknown"}
+                        </span>
+                      </div>
+                    )}
+                  />
+                }
+              />
 
               <Bar
                 dataKey="catches"
                 name="Catches"
                 fill="var(--color-catches)"
-                radius={[4, 4, 0, 0]}
+                radius={[0, 4, 4, 0]}
               />
             </BarChart>
           </ChartContainer>

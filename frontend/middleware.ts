@@ -100,5 +100,11 @@ async function refreshSession(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/profile/:path*", "/auth/:path*"],
+  matcher: [
+    "/",
+    "/profile/:path*",
+    "/map/:path*",
+    "/lakes/:path*",
+    "/statistics/:path*",
+  ],
 };

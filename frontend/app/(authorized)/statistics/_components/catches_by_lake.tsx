@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { LakeCatchStatistics } from "@/services/statistics-service";
+import { CatchesStatistics } from "@/services/statistics-service";
 
 const chartConfig = {
   catches: {
@@ -28,7 +28,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 type Props = {
-  data: LakeCatchStatistics["data"]["catches_by_lake"];
+  data: CatchesStatistics["catches_by_lake"];
 };
 const CatchesByLake = ({ data }: Props) => {
   const lakeStats = data.map((item) => ({
@@ -45,7 +45,7 @@ const CatchesByLake = ({ data }: Props) => {
       </CardHeader>
       <CardContent>
         {lakeStats.length > 0 ? (
-          <ChartContainer config={chartConfig} className="h-[260px] w-full">
+          <ChartContainer config={chartConfig} className="w-full">
             <BarChart
               accessibilityLayer
               data={lakeStats}

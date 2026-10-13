@@ -1,40 +1,23 @@
 "use client";
 
-import { CloudSun, Fish, MapPin, TrendingUp } from "lucide-react";
+import { Fish, MapPin, Trophy } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-
 import { periods } from "@/lib/constants";
 import { useStatisticsStore } from "@/stores/statistics-store";
-import { LakeCatchStatistics } from "@/services/statistics-service";
-
-type Period = "7d" | "30d" | "90d" | "all";
-
-type CatchRecord = {
-  id: number;
-  lake: string;
-  fish: string;
-  date: string;
-  weather: string;
-  temperature: number;
-  count: number;
-};
+import { CatchesStatistics } from "@/services/statistics-service";
 
 type Props = {
   totalCatches: number;
-  topLake: LakeCatchStatistics["data"]["top_lake"];
-  topWeather: LakeCatchStatistics["data"]["top_weather"];
-  averageTemperature: string | null;
+  topLake: CatchesStatistics["top_lake"];
+  topFish: CatchesStatistics["top_fish"];
+  topAngler: CatchesStatistics["top_angler"];
 };
 
-const TopStats = ({
-  totalCatches,
-  topLake,
-  topWeather,
-  averageTemperature,
-}: Props) => {
+const TopStats = ({ totalCatches, topLake, topFish, topAngler }: Props) => {
   const { period } = useStatisticsStore();
   const formatPeriod = periods.find((item) => item.value === period)?.label;
+
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <Card>
@@ -56,9 +39,7 @@ const TopStats = ({
               {topLake?.lake ?? "—"}
             </p>
             <p className="text-xs text-muted-foreground">
-              <span className="mt-1 truncate text-lg font-bold">
-                {topLake?.lake ?? "—"}
-              </span>
+              {topLake ? `${topLake.count} catches` : "No catches yet"}
             </p>
           </div>
           <MapPin className="h-5 w-5 shrink-0 text-muted-foreground" />
@@ -67,37 +48,31 @@ const TopStats = ({
 
       <Card>
         <CardContent className="flex items-center justify-between p-4">
-          <div>
-            <p className="text-sm text-muted-foreground">Top weather</p>
-            <p className="mt-1 text-lg font-bold">
-              {topWeather ? `${topWeather.temperature ?? "—"}°C` : "—"}
+          <div className="min-w-0">
+            <p className="text-sm text-muted-foreground">Top fish</p>
+            <p className="mt-1 truncate text-lg font-bold">
+              {topFish?.fish_name ?? "—"}
             </p>
             <p className="text-xs text-muted-foreground">
-              <span className="text-xs text-muted-foreground">
-                {topWeather
-                  ? `${topWeather.count} matching records`
-                  : "No data"}
-              </span>
+              {topFish ? `${topFish.count} catches` : "No catches yet"}
             </p>
           </div>
-          <CloudSun className="h-5 w-5 text-muted-foreground" />
+          <Fish className="h-5 w-5 shrink-0 text-muted-foreground" />
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="flex items-center justify-between p-4">
-          <div>
-            <p className="text-sm text-muted-foreground">Avg. temperature</p>
-            <p className="mt-1 text-2xl font-bold">
-              {averageTemperature == null
-                ? "—"
-                : `${Number(averageTemperature).toFixed(1)}°C`}
+          <div className="min-w-0">
+            <p className="text-sm text-muted-foreground">Top angler</p>
+            <p className="mt-1 truncate text-lg font-bold">
+              {topAngler?.username ?? "—"}
             </p>
             <p className="text-xs text-muted-foreground">
-              Across recorded entries
+              {topAngler ? `${topAngler.count} catches` : "No catches yet"}
             </p>
           </div>
-          <TrendingUp className="h-5 w-5 text-muted-foreground" />
+          <Trophy className="h-5 w-5 shrink-0 text-muted-foreground" />
         </CardContent>
       </Card>
     </div>

@@ -7,8 +7,11 @@ import {
   CalendarDays,
   Weight,
   UserRound,
+  Fish,
 } from "lucide-react";
-
+import Link from "next/link";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,14 +19,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { BiggestCatch } from "@/services/statistics-service";
-import Link from "next/link";
+import type { TTopCatch } from "@/services/statistics-service";
+import ImageDialog from "@/components/image-dialog";
 
 type Props = {
-  data: BiggestCatch[];
+  data: TTopCatch[];
 };
 
-const BiggestCatches = ({ data }: Props) => {
+const TopCatches = ({ data }: Props) => {
   return (
     <Card>
       <CardHeader>
@@ -48,10 +51,33 @@ const BiggestCatches = ({ data }: Props) => {
                 key={item.id}
                 className="flex items-center gap-3 rounded-lg border p-3"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted font-semibold">
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
+                    index === 0
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
                   {index + 1}
                 </div>
 
+                {item.image_url ? (
+                  <ImageDialog
+                    src={item.image_url}
+                    alt={item.fish || "Caught fish"}
+                  >
+                    <img
+                      src={item.image_url}
+                      alt={item.fish || "Caught fish"}
+                      className="h-24 w-24 rounded-lg object-cover transition-transform duration-200 hover:scale-105"
+                      loading="lazy"
+                    />
+                  </ImageDialog>
+                ) : (
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <Fish className="h-9 w-9 text-muted-foreground" />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
                     {item.fish || "Unknown fish"}
@@ -59,22 +85,22 @@ const BiggestCatches = ({ data }: Props) => {
 
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <UserRound className="h-3.5 w-3.5" />
+                      <UserRound className="h-3.5 w-3.5 shrink-0" />
                       {item.username || "Unknown angler"}
                     </span>
 
                     <Link
                       href={`/lakes/${item.lake_id}`}
-                      className="block max-w-45 truncate text-right text-primary underline underline-offset-4 hover:opacity-80"
+                      className="flex max-w-45 items-center gap-1 text-primary underline underline-offset-4 hover:opacity-80"
                     >
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" />
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">
                         {item.lake_name || "Unknown lake"}
                       </span>
                     </Link>
 
                     <span className="flex items-center gap-1">
-                      <CalendarDays className="h-3.5 w-3.5" />
+                      <CalendarDays className="h-3.5 w-3.5 shrink-0" />
                       {item.date
                         ? new Date(`${item.date}T12:00:00`).toLocaleDateString()
                         : "Unknown date"}
@@ -102,4 +128,4 @@ const BiggestCatches = ({ data }: Props) => {
   );
 };
 
-export default BiggestCatches;
+export default TopCatches;

@@ -10,38 +10,20 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  getCurrentUserWeatherStatistics,
-  getWeatherStatistics,
-} from "@/services/statistics-service";
-import Link from "next/link";
+
+import { TWeatherStatistics } from "@/types";
 type Props = {
-  scope?: "all" | "mine";
+  weatherStatistics: TWeatherStatistics;
 };
-const WeatherStatistics = async ({ scope }: Props) => {
-  const statistics =
-    scope === "mine"
-      ? await getCurrentUserWeatherStatistics()
-      : await getWeatherStatistics();
-
-  if (!statistics) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-sm text-muted-foreground">
-          Unable to load weather statistics.
-        </CardContent>
-      </Card>
-    );
-  }
-
+const WeatherStatistics = async ({ weatherStatistics }: Props) => {
   const items = [
     {
       title: "Temperature",
-      value: statistics.best_temperature
-        ? `${statistics.best_temperature.min}–${statistics.best_temperature.max}°C`
+      value: weatherStatistics.best_temperature
+        ? `${weatherStatistics.best_temperature.min}–${weatherStatistics.best_temperature.max}°C`
         : "No data",
-      description: statistics.best_temperature
-        ? `${statistics.best_temperature.catch_count} catches in this range`
+      description: weatherStatistics.best_temperature
+        ? `${weatherStatistics.best_temperature.catch_count} catches in this range`
         : "No temperature data available",
       icon: Thermometer,
       color: "text-orange-500",
@@ -49,11 +31,11 @@ const WeatherStatistics = async ({ scope }: Props) => {
     },
     {
       title: "Wind speed",
-      value: statistics.best_wind_speed
-        ? `${statistics.best_wind_speed.min}–${statistics.best_wind_speed.max} km/h`
+      value: weatherStatistics.best_wind_speed
+        ? `${weatherStatistics.best_wind_speed.min}–${weatherStatistics.best_wind_speed.max} km/h`
         : "No data",
-      description: statistics.best_wind_speed
-        ? `${statistics.best_wind_speed.catch_count} catches in this range`
+      description: weatherStatistics.best_wind_speed
+        ? `${weatherStatistics.best_wind_speed.catch_count} catches in this range`
         : "No wind data available",
       icon: Wind,
       color: "text-sky-500",
@@ -61,9 +43,9 @@ const WeatherStatistics = async ({ scope }: Props) => {
     },
     {
       title: "Wind direction",
-      value: statistics.best_wind_direction?.direction ?? "No data",
-      description: statistics.best_wind_direction
-        ? `${statistics.best_wind_direction.catch_count} catches with this wind`
+      value: weatherStatistics.best_wind_direction?.direction ?? "No data",
+      description: weatherStatistics.best_wind_direction
+        ? `${weatherStatistics.best_wind_direction.catch_count} catches with this wind`
         : "No wind direction data available",
       icon: Compass,
       color: "text-teal-500",
@@ -71,11 +53,11 @@ const WeatherStatistics = async ({ scope }: Props) => {
     },
     {
       title: "Air pressure",
-      value: statistics.best_pressure
-        ? `${statistics.best_pressure.min}–${statistics.best_pressure.max} hPa`
+      value: weatherStatistics.best_pressure
+        ? `${weatherStatistics.best_pressure.min}–${weatherStatistics.best_pressure.max} hPa`
         : "No data",
-      description: statistics.best_pressure
-        ? `${statistics.best_pressure.catch_count} catches in this range`
+      description: weatherStatistics.best_pressure
+        ? `${weatherStatistics.best_pressure.catch_count} catches in this range`
         : "No pressure data available",
       icon: Gauge,
       color: "text-violet-500",
@@ -103,32 +85,10 @@ const WeatherStatistics = async ({ scope }: Props) => {
 
         <Badge variant="secondary" className="w-fit gap-1.5">
           <Fish className="size-3.5" />
-          {statistics.total_catches} catches analyzed
+          {weatherStatistics.total_catches} catches analyzed
         </Badge>
       </div>
-      <div className="flex w-fit gap-1 rounded-lg bg-muted p-1">
-        <Link
-          href="?scope=all"
-          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            scope === "all"
-              ? "bg-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Everyone
-        </Link>
 
-        <Link
-          href="?scope=mine"
-          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            scope === "mine"
-              ? "bg-background shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          My catches
-        </Link>
-      </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => {
           const Icon = item.icon;
@@ -172,8 +132,8 @@ const WeatherStatistics = async ({ scope }: Props) => {
           <div>
             <p className="text-sm font-semibold">Learn from your catches</p>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              These statistics highlight the weather conditions most frequently
-              associated with catches recorded in Fishbud.
+              These weatherStatistics highlight the weather conditions most
+              frequently associated with catches recorded in Fishbud.
             </p>
           </div>
         </CardContent>

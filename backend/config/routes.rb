@@ -19,13 +19,14 @@ Rails.application.routes.draw do
   end
 
   namespace :statistics do
-    resources :weather, only: [:index] do
+    resources :weather, only: [:index]
+
+    resources :catches, only: [:index] do
       collection do
-        get :current_user_statistics
+        get :top_catches
+        get :top_fishing_trips
       end
     end
-
-    resources :lake_catches, only: [:index]
   end
 
   resources :fish, only: [:index]

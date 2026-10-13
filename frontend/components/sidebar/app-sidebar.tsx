@@ -6,10 +6,20 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { ThemeToggle } from "../theme-toggle";
-import { ChartColumn, Fish, Map, PersonStanding } from "lucide-react";
+import {
+  ChartColumn,
+  ChartNoAxesColumn,
+  Fish,
+  Map,
+  PersonStanding,
+  TrendingUp,
+} from "lucide-react";
 import UserDropdown from "./user-dropdown";
 
 export function AppSidebar() {
@@ -35,15 +45,26 @@ export function AppSidebar() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <Link href={"/statistics"}>
-              {" "}
-              <SidebarMenuButton>
-                <ChartColumn />
-                <span>Statistics</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
+            <SidebarMenuButton>
+              <ChartColumn />
+              <span>Statistics</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton href={"/statistics"}>
+                  <ChartNoAxesColumn />
+                  Stats
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
 
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton href={"/statistics/top_catches"}>
+                  <TrendingUp />
+                  Top Catches
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <Link href={"/profile"}>
               {" "}

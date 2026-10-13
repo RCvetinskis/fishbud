@@ -9,8 +9,7 @@ export const api = axios.create({
   },
   timeout: 10000,
 });
-console.log("API base URL:", api.defaults.baseURL);
-console.log("Request path:", "/statistics/lake_catches");
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
