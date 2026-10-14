@@ -44,4 +44,8 @@ class CatchSerializer < ActiveModel::Serializer
       pressure: record.pressure
     }
   end
+
+  def lure
+    object.lure&.name
+  end
 end

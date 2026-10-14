@@ -121,6 +121,31 @@ export type TSpot = {
   latitude: number;
   longitude: number;
 };
+
+export type TLureType = "natural" | "artificial";
+
+export type TLure = {
+  id: number;
+  name: string;
+  lure_type: TLureType;
+  description?: string;
+} & TCrudDate;
+
+export type TRailsSuccessResponse<T> = {
+  data: T;
+  error: false;
+  message: string;
+};
+
+export type TRailsErrorResponse = {
+  data: null;
+  error: true;
+  message: string;
+};
+
+export type TRailsResponse<T> = TRailsSuccessResponse<T> | TRailsErrorResponse;
+
+export type TSelectItem = { label: string; value: string | number };
 export class ApiError extends Error {
   data: any;
   status: number;

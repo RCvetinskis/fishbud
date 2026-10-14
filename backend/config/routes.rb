@@ -52,4 +52,10 @@ Rails.application.routes.draw do
   resources :spots, only: %i[index create] do
     collection { get :suggest }
   end
+
+  resources :lures, only: %i[index create] do
+    collection do
+      get :lure_types
+    end
+  end
 end

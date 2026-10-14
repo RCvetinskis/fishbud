@@ -21,26 +21,44 @@ import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/image-upload/image-upload";
 import { getLocalDateTime } from "@/lib/utils";
 import { getErrorMessage } from "@/lib/axios-helper";
+import DialogContainer from "@/components/dialog-container";
+import LureForm from "./lure-form";
+import SimpleCombobox from "../../../../../components/simple-combobox";
+import { useEffect, useState } from "react";
+import { getLures } from "@/services/lure-service";
+import { TLure } from "@/types";
 
 type Props = {
   lake_id: string;
   fishing_trip_id?: number;
   onSuccess: () => void;
 };
-const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
+const CatchForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
+  const [lures, setLures] = useState<TLure[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof caughtFishSchema>>({
     resolver: zodResolver(caughtFishSchema),
     defaultValues: {
       fish_id: undefined,
       description: "",
-      lure: "",
+      lure_id: undefined,
       weight: "",
       length: "",
       image: undefined,
       caught_at: getLocalDateTime(),
     },
   });
+
+  useEffect(() => {
+    const fetchLures = async () => {
+      const data = await getLures();
+
+      setLures(data);
+    };
+    fetchLures();
+  }, []);
+
   async function onSubmit(data: z.infer<typeof caughtFishSchema>) {
     try {
       const formData = new FormData();
@@ -60,8 +78,8 @@ const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
         formData.append("catch[description]", data.description);
       }
 
-      if (data.lure) {
-        formData.append("catch[lure]", data.lure);
+      if (data.lure_id) {
+        formData.append("catch[lure_id]", String(data.lure_id));
       }
 
       if (data.image instanceof File) {
@@ -92,11 +110,19 @@ const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
       });
     }
   }
+  const selectItems = lures.map((lure) => ({
+    label: lure.name.charAt(0).toUpperCase() + lure.name.slice(1),
+    value: lure.id,
+  }));
 
+  const handleLureSubmit = (lure: TLure) => {
+    setLures((prev) => [lure, ...prev]);
+    setDialogOpen(false);
+  };
   return (
     <Card>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form id="catch-form" onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
             <Controller
               name="fish_id"
@@ -113,17 +139,27 @@ const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
             />
 
             <Controller
-              name="lure"
+              name="lure_id"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="lure">Lure / bait (optional)</FieldLabel>
-                  <Input
-                    {...field}
-                    id="lure"
-                    placeholder="e.g. Boilie, worm, spinner"
-                    aria-invalid={fieldState.invalid}
-                  />
+                  <div>
+                    <SimpleCombobox
+                      items={selectItems}
+                      value={field?.value || null}
+                      onChange={field.onChange}
+                    >
+                      <Button
+                        type="button"
+                        className="w-full"
+                        onClick={() => setDialogOpen(true)}
+                      >
+                        + Add lure
+                      </Button>
+                    </SimpleCombobox>
+                  </div>
+
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -251,17 +287,29 @@ const CaughtFishForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
             <div className="md:col-span-2">
               <Button
                 type="submit"
+                form="catch-form"
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? "Saving catch..." : "Save catch"}
+                {form.formState.isSubmitting ? "Saving..." : "Save"}
               </Button>
             </div>
           </div>
         </form>
+
+        <DialogContainer
+          btnClassname="w-full"
+          openBtnTitle="Add lure"
+          variant={"default"}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          hideTrigger
+        >
+          <LureForm afterSubmit={handleLureSubmit} />
+        </DialogContainer>
       </CardContent>
     </Card>
   );
 };
 
-export default CaughtFishForm;
+export default CatchForm;
