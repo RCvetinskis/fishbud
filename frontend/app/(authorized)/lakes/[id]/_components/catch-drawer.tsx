@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import DrawerContainer from "@/components/drawer-container";
-import CaughtFishForm from "./caught-fish-form";
+import CatchForm from "./catch-form";
 
 type Props = {
   lake_id: string;
   fishing_trip_id?: number;
 };
 
-const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
+const CatchDrawer = ({ lake_id, fishing_trip_id }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,7 +21,7 @@ const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
       description="Select caught fish, describe bait/lure and add a picture if you want to."
     >
       <div className="p-2">
-        <CaughtFishForm
+        <CatchForm
           lake_id={lake_id}
           fishing_trip_id={fishing_trip_id}
           onSuccess={() => setOpen(false)}
@@ -31,4 +31,4 @@ const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
   );
 };
 
-export default CaughtFishDrawer;
+export default CatchDrawer;

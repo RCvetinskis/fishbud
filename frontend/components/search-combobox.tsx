@@ -25,7 +25,7 @@ type Props = {
   className?: string;
 };
 
-const DEBOUNCE_MS = 250;
+const DEBOUNCE_MS = 350;
 
 const SearchCombobox = ({
   placeholder,

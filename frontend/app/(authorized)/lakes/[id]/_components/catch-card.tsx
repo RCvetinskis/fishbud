@@ -17,15 +17,18 @@ import {
 import { TCatch } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import LureCard from "@/components/lure-card";
+import ShowMoreText from "@/components/show-more-text";
+import WeatherCard from "@/components/weather-card";
+import ImageDialog from "@/components/image-dialog";
 
 type Props = {
-  caughtFish: TCatch;
+  catchData: TCatch;
 };
 
-const CaughtFishCard = ({ caughtFish }: Props) => {
-  const hasImage = Boolean(caughtFish.image_url);
-  const hasMeasurements =
-    caughtFish.weight != null || caughtFish.length != null;
+const CatchCard = ({ catchData }: Props) => {
+  const hasImage = Boolean(catchData.image_url);
+  const hasMeasurements = catchData.weight != null || catchData.length != null;
 
   return (
     <Card className="group relative flex p-0 h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5">
@@ -33,28 +36,34 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
       <div className="relative isolate h-28 overflow-hidden rounded-t-xl sm:h-32 ">
         {hasImage ? (
           <>
-            <img
-              src={caughtFish.image_url!}
-              alt={`Caught ${caughtFish.fish_name}`}
-              loading="lazy"
-              className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            <ImageDialog
+              src={catchData.image_url!}
+              alt={`Caught ${catchData.fish_name}`}
+              fill
+            >
+              <img
+                src={catchData.image_url!}
+                alt={`Caught ${catchData.fish_name}`}
+                loading="lazy"
+                className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </ImageDialog>
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-black/20" />
 
             <div className="absolute left-3 top-3">
               <Badge className="border border-white/20 bg-black/40 px-2 py-0.5 text-xs text-white shadow-sm backdrop-blur-md hover:bg-black/50">
                 <Waves className="mr-1 size-3" />
-                Catch #{caughtFish.id}
+                Catch #{catchData.id}
               </Badge>
             </div>
 
             <div className="absolute inset-x-0 bottom-0 p-3.5 text-white">
               <h3 className="truncate text-lg font-bold tracking-tight drop-shadow-sm">
-                {caughtFish.fish_name}
+                {catchData.fish_name}
               </h3>
               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-white/85">
                 <UserRound className="size-3 shrink-0" />
-                <span className="truncate">{caughtFish.caught_by}</span>
+                <span className="truncate">{catchData.caught_by}</span>
               </p>
             </div>
           </>
@@ -72,17 +81,17 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
                   Fishing log
                 </span>
                 <Badge className="border border-white/15 bg-white/10 px-2 py-0.5 text-xs text-white hover:bg-white/15">
-                  #{caughtFish.id}
+                  #{catchData.id}
                 </Badge>
               </div>
 
               <div className="min-w-0">
                 <h3 className="truncate text-lg font-bold tracking-tight text-white">
-                  {caughtFish.fish_name}
+                  {catchData.fish_name}
                 </h3>
                 <p className="mt-0.5 flex items-center gap-1.5 text-xs text-emerald-50/80">
                   <UserRound className="size-3 shrink-0" />
-                  <span className="truncate">{caughtFish.caught_by}</span>
+                  <span className="truncate">{catchData.caught_by}</span>
                 </p>
               </div>
             </div>
@@ -94,14 +103,14 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
         {/* Catch measurements */}
         {hasMeasurements && (
           <div className="grid grid-cols-2 gap-2">
-            {caughtFish.weight != null && (
+            {catchData.weight != null && (
               <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 transition-colors group-hover:bg-muted/60">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Weight className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span className="text-[11px] font-medium">Weight</span>
                 </div>
                 <p className="mt-1.5 text-xl font-bold tracking-tight">
-                  {caughtFish.weight}
+                  {catchData.weight}
                   <span className="ml-1 text-xs font-medium text-muted-foreground">
                     kg
                   </span>
@@ -109,14 +118,14 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
               </div>
             )}
 
-            {caughtFish.length != null && (
+            {catchData.length != null && (
               <div className="rounded-lg border border-border/60 bg-muted/40 p-2.5 transition-colors group-hover:bg-muted/60">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Ruler className="size-3.5 text-teal-600 dark:text-teal-400" />
                   <span className="text-[11px] font-medium">Length</span>
                 </div>
                 <p className="mt-1.5 text-xl font-bold tracking-tight">
-                  {caughtFish.length}
+                  {catchData.length}
                   <span className="ml-1 text-xs font-medium text-muted-foreground">
                     cm
                   </span>
@@ -127,108 +136,23 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
         )}
 
         {/* Description */}
-        {caughtFish.description && (
-          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-            {caughtFish.description}
-          </p>
+        {catchData.description && (
+          <ShowMoreText text={catchData.description} displayChars={50} />
         )}
 
-        {/* Bait */}
-        {caughtFish.lure && (
-          <div className="flex items-center gap-2.5 rounded-lg bg-emerald-500/6 px-3 py-2.5">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              <Fish className="size-3.5" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] text-muted-foreground">Lure / bait</p>
-              <p className="truncate text-xs font-semibold">
-                {caughtFish.lure}
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Lure */}
+        {catchData.lure && <LureCard lure={catchData.lure} />}
 
         {/* Weather conditions */}
-        {caughtFish.weather &&
-          (caughtFish.weather.temperature != null ||
-            caughtFish.weather.wind_speed != null ||
-            caughtFish.weather.wind_direction != null ||
-            caughtFish.weather.pressure != null) && (
-            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-              <div className="mb-2.5 flex items-center gap-2">
-                <Waves className="size-4 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-xs font-semibold">
-                  Weather conditions
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-x-3 gap-y-3">
-                {caughtFish.weather.temperature != null && (
-                  <div className="flex items-center gap-2">
-                    <Thermometer className="size-4 shrink-0 text-orange-500" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Temperature
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {caughtFish.weather.temperature}°C
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {caughtFish.weather.wind_speed != null && (
-                  <div className="flex items-center gap-2">
-                    <Wind className="size-4 shrink-0 text-sky-600 dark:text-sky-400" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Wind speed
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {caughtFish.weather.wind_speed} km/h
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {caughtFish.weather.wind_direction != null && (
-                  <div className="flex items-center gap-2">
-                    <Compass className="size-4 shrink-0 text-teal-600 dark:text-teal-400" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Wind direction
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {caughtFish.weather.wind_direction}°
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {caughtFish.weather.pressure != null && (
-                  <div className="flex items-center gap-2">
-                    <Gauge className="size-4 shrink-0 text-violet-600 dark:text-violet-400" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Pressure
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {caughtFish.weather.pressure} hPa
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+        {catchData.weather && <WeatherCard weather={catchData.weather} />}
         {/* Footer */}
         <div className="mt-auto flex items-center gap-1.5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
           <CalendarDays className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span className="min-w-0 flex-1 truncate">
-            Caught {caughtFish.caught_at}
+            Caught {catchData.caught_at}
           </span>
 
-          {caughtFish.updated_at !== caughtFish.created_at && (
+          {catchData.updated_at !== catchData.created_at && (
             <Badge
               variant="outline"
               className="shrink-0 px-1.5 py-0 text-[9px] font-normal"
@@ -242,4 +166,4 @@ const CaughtFishCard = ({ caughtFish }: Props) => {
   );
 };
 
-export default CaughtFishCard;
+export default CatchCard;

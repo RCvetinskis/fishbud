@@ -7,9 +7,15 @@ type Props = {
   src: string;
   alt?: string;
   children: React.ReactNode;
+  fill?: boolean;
 };
 
-const ImageDialog = ({ src, alt = "Image preview", children }: Props) => {
+const ImageDialog = ({
+  src,
+  alt = "Image preview",
+  children,
+  fill = false,
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -17,7 +23,11 @@ const ImageDialog = ({ src, alt = "Image preview", children }: Props) => {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="cursor-zoom-in"
+        className={
+          fill
+            ? "absolute inset-0 z-10 block size-full cursor-zoom-in text-left"
+            : "block shrink-0 cursor-zoom-in rounded-lg"
+        }
         aria-label={`View larger image: ${alt}`}
       >
         {children}

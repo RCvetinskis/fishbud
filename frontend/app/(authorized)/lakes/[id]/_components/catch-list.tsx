@@ -1,9 +1,9 @@
 import PaginationContainer from "@/components/pagination-container";
-import CaughtFishCard from "./caught-fish-card";
+import CatchCard from "./catch-card";
 import { getLakeCatches } from "@/services/lake-service";
 import EmptyState from "@/components/empty-state";
 import CatchesFilter from "./filters/catches-filter";
-import CaughtFishDrawer from "./caught-fish-drawer";
+import CatchDrawer from "./catch-drawer";
 import { Card } from "@/components/ui/card";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const CaughtFishesList = async ({ lakeId, searchParams }: Props) => {
+const CatchList = async ({ lakeId, searchParams }: Props) => {
   const query = await searchParams;
   const catchesParams = {
     date_from:
@@ -27,12 +27,12 @@ const CaughtFishesList = async ({ lakeId, searchParams }: Props) => {
     <div className="space-y-4">
       <Card>
         <CatchesFilter />
-        <CaughtFishDrawer lake_id={lakeId} />
+        <CatchDrawer lake_id={lakeId} />
       </Card>
       {data.result.length > 0 ? (
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {data.result.map((item) => (
-            <CaughtFishCard key={item.id} caughtFish={item} />
+            <CatchCard key={item.id} catchData={item} />
           ))}
         </div>
       ) : (
@@ -49,4 +49,4 @@ const CaughtFishesList = async ({ lakeId, searchParams }: Props) => {
   );
 };
 
-export default CaughtFishesList;
+export default CatchList;

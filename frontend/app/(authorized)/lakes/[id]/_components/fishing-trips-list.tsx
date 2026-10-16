@@ -31,7 +31,7 @@ const FishingTripsList = async ({ lakeId, searchParams }: Props) => {
       {data.result.length === 0 ? (
         <EmptyState title="No fishing trips found" />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {data.result.map((trip) => (
             <FishingTripCard key={trip.id} trip={trip} />
           ))}

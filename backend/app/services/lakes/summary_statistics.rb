@@ -1,5 +1,5 @@
-module Catches
-  class Statistics
+module Lakes
+  class SummaryStatistics
     def self.call(lake_id: nil, user_id: nil)
       catches = Catch.all
       catches = catches.where(lake_id: lake_id) if lake_id

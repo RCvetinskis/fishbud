@@ -3,6 +3,7 @@ class Catch < ApplicationRecord
   belongs_to :user
   belongs_to :lake
   belongs_to :fishing_trip, optional: true
+  belongs_to :lure, optional: true
 
   has_one :weather, dependent: :destroy
   has_one_attached :image
@@ -23,6 +24,7 @@ class Catch < ApplicationRecord
               less_than_or_equal_to: 1000
             },
             allow_blank: true
+  validates :description, length: { maximum: 255 }
 
   validate :image_must_be_an_image
   validate :caught_at_cannot_be_in_the_future

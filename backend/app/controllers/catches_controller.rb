@@ -33,7 +33,7 @@ end
 
   def catch_params
     params.require(:catch).permit(:fish_id, :lake_id, :fishing_trip_id, :description, :lure, :weight, :length, :image,
-                                  :caught_at)
+                                  :caught_at, :lure_id)
   end
 
   def set_lake

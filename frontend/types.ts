@@ -48,14 +48,9 @@ export type TCatch = {
   weight?: string;
   length?: string;
   image_url?: string;
-  lure?: string;
+  lure?: TLure;
   description?: string;
-  weather?: {
-    temperature: number | null;
-    wind_speed: number | null;
-    wind_direction: number | null;
-    pressure: number | null;
-  } | null;
+  weather?: TWeather;
 } & TCrudDate;
 
 export type TWeatherStatistics = {
@@ -80,19 +75,21 @@ export type TWeatherStatistics = {
     catch_count: number;
   } | null;
 };
-export type TFishingTripWeather = {
+export type TWeather = {
   temperature: number | null;
   wind_speed: number | null;
-  description: string | null;
+  pressure: string | null;
+  wind_direction: string | null;
 };
 
 export type TFishingTripCatch = {
   id: number;
   fish_name: string;
+  lure: TLure | null;
   caught_at: string | null;
   weight: number | null;
   length: number | null;
-  weather: TFishingTripWeather | null;
+  weather: TWeather | null;
 };
 
 export type TFishingTrip = {
@@ -121,6 +118,31 @@ export type TSpot = {
   latitude: number;
   longitude: number;
 };
+
+export type TLureType = "natural" | "artificial";
+
+export type TLure = {
+  id: number;
+  name: string;
+  lure_type: TLureType;
+  description?: string;
+} & TCrudDate;
+
+export type TRailsSuccessResponse<T> = {
+  data: T;
+  error: false;
+  message: string;
+};
+
+export type TRailsErrorResponse = {
+  data: null;
+  error: true;
+  message: string;
+};
+
+export type TRailsResponse<T> = TRailsSuccessResponse<T> | TRailsErrorResponse;
+
+export type TSelectItem = { label: string; value: string | number };
 export class ApiError extends Error {
   data: any;
   status: number;

@@ -79,7 +79,7 @@ async function refreshSession(request: NextRequest) {
 
   if (!response.ok) {
     const redirectResponse = NextResponse.redirect(
-      new URL("/auth/login", request.url),
+      new URL("/auth/signin", request.url),
     );
 
     redirectResponse.cookies.delete("access_token");

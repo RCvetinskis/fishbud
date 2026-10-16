@@ -46,7 +46,7 @@ class LakesController < ApplicationController
   def lake_statistics
     return render_not_found unless @lake
 
-    render_success(Catches::Statistics.call(lake_id: @lake.id))
+    render_success(Lakes::SummaryStatistics.call(lake_id: @lake.id))
   end
 
   private
