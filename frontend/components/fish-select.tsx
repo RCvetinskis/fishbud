@@ -96,9 +96,9 @@ const FishSelect = ({
         placeholder="Select a fish"
       />
 
-      <ComboboxContent>
+      <ComboboxContent className="relative">
         {loading ? (
-          <LoadingSpinner />
+          <LoadingSpinner className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
         ) : (
           <>
             <ComboboxEmpty>No fish found.</ComboboxEmpty>

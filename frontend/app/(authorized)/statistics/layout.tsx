@@ -18,7 +18,7 @@ const StatisticsLayout = async ({ children }: Props) => {
   const pathname = headersList.get("x-pathname") ?? "";
 
   const hideFishSelect = pathname.includes("top_fishing_trips");
-
+  // TODO:lure statistics
   return (
     <div className="space-y-4">
       <Card>

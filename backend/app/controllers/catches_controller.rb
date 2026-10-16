@@ -13,21 +13,21 @@ class CatchesController < ApplicationController
     end
   end
 
-def lake_catches
-  return render_not_found unless @lake
+  def lake_catches
+    return render_not_found unless @lake
 
-  catches = Catches::Search.call(lake: @lake, params: params)
-  catches = catches.page(params[:page]).per(per_page)
+    catches = Catches::Search.call(lake: @lake, params: params)
+    catches = catches.page(params[:page]).per(per_page)
 
-  render_success(
-    {
-      result: serialize_collection(catches, CatchSerializer),
-      meta: pagination_dict(catches)
-    }
-  )
-rescue Date::Error
-  render_error('Invalid date filter. Use YYYY-MM-DD.')
-end
+    render_success(
+      {
+        result: serialize_collection(catches, CatchSerializer),
+        meta: pagination_dict(catches)
+      }
+    )
+  rescue Date::Error
+    render_error('Invalid date filter. Use YYYY-MM-DD.')
+  end
 
   private
 
