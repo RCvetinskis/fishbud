@@ -40,12 +40,18 @@ class CatchSerializer < ActiveModel::Serializer
     {
       temperature: record.temperature,
       wind_speed: record.wind_speed,
-      wind_direction: record.wind_direction,
+      wind_direction: record.wind_direction_compass,
       pressure: record.pressure
     }
   end
 
   def lure
-    object.lure&.name
+    return unless object.lure
+
+    {
+      name: object.lure.name,
+      description: object.lure.description,
+      lure_type: object.lure.lure_type
+    }
   end
 end

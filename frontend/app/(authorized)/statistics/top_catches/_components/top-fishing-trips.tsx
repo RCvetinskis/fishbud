@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { TTopFishingTripStatistic } from "@/services/statistics-service";
 import Link from "next/link";
-import { formatDate, formatDuration } from "@/lib/utils";
+import { formatDateTime, formatDuration } from "@/lib/utils";
 
 type Props = {
   data: TTopFishingTripStatistic[];
@@ -70,7 +70,7 @@ const TopFishingTrips = ({ data }: Props) => {
 
                         <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                           <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-                          <span>{formatDate(trip.started_at)}</span>
+                          <span>{formatDateTime(trip.started_at)}</span>
                           <span>·</span>
                           <span>
                             {formatDuration(trip.started_at, trip.ended_at)}

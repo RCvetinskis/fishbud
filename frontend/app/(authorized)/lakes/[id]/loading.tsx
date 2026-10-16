@@ -1,4 +1,4 @@
-import CaughtFishCardSkeleton from "./_components/skeletons/caught-fish-card-skeleton";
+import CatchCardSkeleton from "./_components/skeletons/catch-card-skeleton";
 import FishingTripSkeleton from "./_components/skeletons/fishing-trip-skeleton";
 import LakeStatisticsSkeleton from "./_components/skeletons/lake-statistics-skeleton";
 import LakeInfoCardSkeleton from "./_components/skeletons/lake_info_card_skeleton";
@@ -18,9 +18,9 @@ const LakeLoading = () => {
       <FishingTripSkeleton />
       <LakeStatisticsSkeleton />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
-          <CaughtFishCardSkeleton key={index} />
+          <CatchCardSkeleton key={index} />
         ))}
       </div>
     </div>

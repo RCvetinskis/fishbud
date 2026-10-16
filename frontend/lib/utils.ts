@@ -11,16 +11,15 @@ export const getLocalDateTime = () => {
 
   return new Date(now.getTime() - offset).toISOString().slice(0, 16);
 };
-export const formatDate = (date: string) =>
+
+export const formatDateTime = (value: string) =>
   new Intl.DateTimeFormat("lt-LT", {
-    day: "2-digit",
-    month: "short",
     year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    hourCycle: "h23",
-  }).format(new Date(date));
-
+  }).format(new Date(value));
 export const formatDuration = (startedAt: string, endedAt: string | null) => {
   if (!endedAt) return "In progress";
 

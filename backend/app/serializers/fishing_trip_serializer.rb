@@ -18,6 +18,7 @@ class FishingTripSerializer < ActiveModel::Serializer
         caught_at: catch.caught_at,
         weight: catch.weight,
         length: catch.length,
+        lure: catch&.lure,
         weather: weather_attributes(catch)
       }
     end
@@ -32,7 +33,7 @@ class FishingTripSerializer < ActiveModel::Serializer
     {
       temperature: weather.temperature,
       wind_speed: weather.wind_speed,
-      wind_direction: weather.wind_direction,
+      wind_direction: weather.wind_direction_compass,
       pressure: weather.pressure
     }
   end

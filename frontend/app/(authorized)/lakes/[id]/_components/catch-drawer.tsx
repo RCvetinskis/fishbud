@@ -9,7 +9,7 @@ type Props = {
   fishing_trip_id?: number;
 };
 
-const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
+const CatchDrawer = ({ lake_id, fishing_trip_id }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,4 +31,4 @@ const CaughtFishDrawer = ({ lake_id, fishing_trip_id }: Props) => {
   );
 };
 
-export default CaughtFishDrawer;
+export default CatchDrawer;

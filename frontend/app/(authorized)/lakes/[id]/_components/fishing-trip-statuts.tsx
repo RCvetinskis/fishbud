@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/toast";
 import axios from "axios";
-import CaughtFishDrawer from "./caught-fish-drawer";
+import CatchDrawer from "./catch-drawer";
 import { getErrorMessage } from "@/lib/axios-helper";
 import Link from "next/link";
 
@@ -158,7 +158,7 @@ const FishingTripStatuts = ({ lakeId }: Props) => {
 
             <div>
               <h3 className="mb-3 text-lg font-semibold">Record a catch</h3>
-              <CaughtFishDrawer lake_id={lakeId} fishing_trip_id={trip.id} />
+              <CatchDrawer lake_id={lakeId} fishing_trip_id={trip.id} />
             </div>
             <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <AlertDialogTrigger

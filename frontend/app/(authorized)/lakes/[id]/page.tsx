@@ -1,15 +1,7 @@
 import MapWrapper from "@/components/map/map-wrapper";
-import {
-  getLakeById,
-  getLakeCatches,
-  getLakeStatistics,
-} from "@/services/lake-service";
+import { getLakeById, getLakeStatistics } from "@/services/lake-service";
 import LakeInfoCard from "./_components/lake-info-card";
-import CaughtFishesList from "./_components/caught-fishes-list";
-import CaughtFishDrawer from "./_components/caught-fish-drawer";
-import CatchesFilter from "./_components/filters/catches-filter";
-import PaginationContainer from "@/components/pagination-container";
-import EmptyState from "@/components/empty-state";
+import CatchList from "./_components/catch-list";
 import LakeStatistics from "./_components/lake_statistics";
 import { Card } from "@/components/ui/card";
 import FishingTripStatuts from "./_components/fishing-trip-statuts";
@@ -94,7 +86,7 @@ const LakePage = async ({ params, searchParams }: Props) => {
 
       {view === "catches" ? (
         <>
-          <CaughtFishesList lakeId={id} searchParams={searchParams} />
+          <CatchList lakeId={id} searchParams={searchParams} />
         </>
       ) : (
         <FishingTripsList lakeId={lake.id} searchParams={searchParams} />

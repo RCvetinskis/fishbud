@@ -7,7 +7,10 @@ export const caughtFishSchema = z.object({
     })
     .min(1, "Selected fish ID is invalid"),
 
-  description: z.string().optional(),
+  description: z
+    .string()
+    .max(255, "Description must be at most 255 characters")
+    .optional(),
   lure_id: z.string().optional(),
 
   weight: z
@@ -41,5 +44,8 @@ export const lureSchema = z.object({
     .string()
     .min(1, "Lure Type is required")
     .max(50, "Lure Type must be at most 50 characters"),
-  description: z.string().optional(),
+  description: z
+    .string()
+    .max(255, "Description must be at most 255 characters")
+    .optional(),
 });

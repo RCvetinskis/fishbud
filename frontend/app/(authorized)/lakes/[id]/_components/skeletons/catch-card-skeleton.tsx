@@ -7,7 +7,7 @@ type Props = {
   hasLure?: boolean;
 };
 
-const CaughtFishCardSkeleton = ({
+const CatchCardSkeleton = ({
   hasImage = false,
   hasMeasurements = true,
   hasDescription = true,
@@ -81,4 +81,4 @@ const CaughtFishCardSkeleton = ({
   );
 };
 
-export default CaughtFishCardSkeleton;
+export default CatchCardSkeleton;

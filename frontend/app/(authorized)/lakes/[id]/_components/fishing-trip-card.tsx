@@ -1,15 +1,4 @@
-import {
-  CalendarDays,
-  Clock,
-  Fish,
-  Scale,
-  Ruler,
-  CloudSun,
-  MapPin,
-  Waves,
-  Thermometer,
-  Wind,
-} from "lucide-react";
+import { CalendarDays, Clock, Fish, Scale, MapPin, Waves } from "lucide-react";
 
 import {
   Card,
@@ -21,19 +10,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { TFishingTrip } from "@/types";
+import { formatDateTime } from "@/lib/utils";
+
+import FishingTripCatches from "./fishing-trip-catches";
 
 type Props = {
   trip: TFishingTrip;
 };
-
-const formatDateTime = (value: string) =>
-  new Intl.DateTimeFormat("lt-LT", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
 
 const FishingTripCard = ({ trip }: Props) => {
   const totalWeight = trip.catches.reduce(
@@ -154,88 +137,7 @@ const FishingTripCard = ({ trip }: Props) => {
         <Separator />
 
         {/* Catches */}
-        <div className="space-y-3">
-          <h3 className="flex items-center gap-2 text-sm font-semibold">
-            <Waves className="size-4 text-emerald-600 dark:text-emerald-400" />
-            Catches during this trip
-          </h3>
-
-          {trip.catches.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border/70 bg-muted/20 px-3 py-5 text-center text-sm text-muted-foreground">
-              No fish caught during this trip.
-            </p>
-          ) : (
-            trip.catches.map((fish) => (
-              <div
-                key={fish.id}
-                className="rounded-lg border border-border/60 p-3 transition-colors hover:bg-muted/20"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">{fish.fish_name}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {fish.caught_at
-                        ? formatDateTime(fish.caught_at)
-                        : "Catch time not recorded"}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                    {fish.weight != null && (
-                      <span className="flex items-center gap-1">
-                        <Scale className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                        {fish.weight} kg
-                      </span>
-                    )}
-
-                    {fish.length != null && (
-                      <span className="flex items-center gap-1">
-                        <Ruler className="size-3.5 text-teal-600 dark:text-teal-400" />
-                        {fish.length} cm
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {fish.weather &&
-                  (fish.weather.temperature != null ||
-                    fish.weather.wind_speed != null ||
-                    fish.weather.description) && (
-                    <div className="mt-3 rounded-lg border border-border/60 bg-muted/30 p-3">
-                      <div className="mb-2 flex items-center gap-2">
-                        <CloudSun className="size-4 text-emerald-600 dark:text-emerald-400" />
-                        <span className="text-xs font-semibold">
-                          Weather conditions
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                        {fish.weather.temperature != null && (
-                          <span className="flex items-center gap-1.5">
-                            <Thermometer className="size-4 text-orange-500" />
-                            {fish.weather.temperature}°C
-                          </span>
-                        )}
-
-                        {fish.weather.wind_speed != null && (
-                          <span className="flex items-center gap-1.5">
-                            <Wind className="size-4 text-sky-600 dark:text-sky-400" />
-                            {fish.weather.wind_speed} km/h
-                          </span>
-                        )}
-
-                        {fish.weather.description && (
-                          <span className="text-muted-foreground">
-                            {fish.weather.description}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-              </div>
-            ))
-          )}
-        </div>
+        <FishingTripCatches catches={trip.catches} />
 
         <div className="mt-auto flex items-center gap-1.5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
           <CalendarDays className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
