@@ -17,6 +17,11 @@ export type TMeta = {
   total_pages: number;
 };
 
+export type TPaginatedResponse<T> = {
+  data: T;
+  meta: TMeta | null;
+};
+
 export type TFish = {
   id: number;
   name: string;
@@ -55,25 +60,25 @@ export type TCatch = {
 
 export type TWeatherStatistics = {
   total_catches: number;
-  best_temperature: {
+  best_temperatures: {
     min: number;
     max: number;
     catch_count: number;
-  } | null;
-  best_wind_speed: {
+  }[];
+  best_wind_speeds: {
     min: number;
     max: number;
     catch_count: number;
-  } | null;
-  best_wind_direction: {
+  }[];
+  best_wind_directions: {
     direction: string;
     catch_count: number;
-  } | null;
-  best_pressure: {
+  }[];
+  best_pressures: {
     min: number;
     max: number;
     catch_count: number;
-  } | null;
+  }[];
 };
 export type TWeather = {
   temperature: number | null;

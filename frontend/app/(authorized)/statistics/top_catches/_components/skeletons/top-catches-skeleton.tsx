@@ -14,46 +14,55 @@ type Props = {
 
 const TopCatchesSkeleton = ({ count = 5 }: Props) => {
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-amber-500" />
-          <CardTitle>Biggest catches</CardTitle>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10">
+            <Trophy className="h-5 w-5 text-amber-500" />
+          </div>
+          <div>
+            <CardTitle>Biggest catches</CardTitle>
+            <CardDescription>
+              The community&apos;s biggest catches in the selected period.
+            </CardDescription>
+          </div>
         </div>
-
-        <CardDescription>
-          The community's biggest catches in the selected period.
-        </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: count }).map((_, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 rounded-lg border p-3"
+              className="flex flex-col overflow-hidden rounded-xl border bg-card"
             >
-              {/* Ranking */}
-              <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+              {/* Image header */}
+              <div className="relative aspect-[4/3] w-full bg-muted">
+                <Skeleton className="h-full w-full rounded-none" />
 
-              {/* Fish image */}
-              <Skeleton className="h-24 w-24 shrink-0 rounded-lg" />
+                {/* Rank badge */}
+                <Skeleton className="absolute left-3 top-3 h-9 w-9 rounded-full" />
 
-              {/* Catch information */}
-              <div className="min-w-0 flex-1 space-y-3">
-                <Skeleton className="h-5 w-32 max-w-full" />
+                {/* Length badge */}
+                <Skeleton className="absolute right-3 top-3 h-6 w-20 rounded-md" />
 
-                <div className="flex flex-wrap gap-x-4 gap-y-2">
-                  <Skeleton className="h-4 w-28" />
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
+                {/* Fish name overlay */}
+                <Skeleton className="absolute bottom-2 left-3 right-3 h-5 rounded-md" />
               </div>
 
-              {/* Length and weight */}
-              <div className="flex shrink-0 flex-col items-end gap-3">
-                <Skeleton className="h-5 w-16" />
-                <Skeleton className="h-4 w-14" />
+              {/* Details */}
+              <div className="flex flex-1 flex-col gap-3 p-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-4 w-28" />
+                </div>
+
+                {/* Footer stats */}
+                <div className="mt-auto flex items-center justify-between border-t pt-3">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-14" />
+                </div>
               </div>
             </div>
           ))}

@@ -2,18 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 
 function getTokenExpiration(token: string) {
   try {
-    const payload = token.split(".")[1];
-
-    if (!payload) {
-      return null;
-    }
-
+    const raw = token.replace(/^Bearer\s+/i, "");
+    const payload = raw.split(".")[1];
+    if (!payload) return null;
     const decoded = JSON.parse(Buffer.from(payload, "base64url").toString());
-
     return decoded.exp ?? null;
   } catch {
     return null;
   }
+}
+function nextWithPathname(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 }
 
 export async function middleware(request: NextRequest) {
@@ -22,26 +26,23 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Routes that require authentication.
   const protectedRoutes = ["/", "/profile", "/map", "/lakes"];
 
   const isProtectedRoute = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
-  // Routes that are only for unauthenticated users.
   const isAuthRoute = pathname === "/auth" || pathname.startsWith("/auth/");
 
   if (isAuthRoute) {
     if (accessToken || refreshToken) {
       return NextResponse.redirect(new URL("/", request.url));
     }
-
-    return NextResponse.next();
+    return nextWithPathname(request);
   }
 
   if (!isProtectedRoute) {
-    return NextResponse.next();
+    return nextWithPathname(request);
   }
 
   if (!accessToken && !refreshToken) {
@@ -64,7 +65,7 @@ export async function middleware(request: NextRequest) {
     return refreshSession(request);
   }
 
-  return NextResponse.next();
+  return nextWithPathname(request);
 }
 
 async function refreshSession(request: NextRequest) {
@@ -89,6 +90,7 @@ async function refreshSession(request: NextRequest) {
   }
 
   const nextResponse = NextResponse.next();
+  nextResponse.headers.set("x-pathname", request.nextUrl.pathname);
 
   const setCookies = response.headers.getSetCookie();
 

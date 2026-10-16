@@ -21,6 +21,7 @@ const CatchList = async ({ lakeId, searchParams }: Props) => {
     page: typeof query.page === "string" ? query.page : undefined,
     fish_id: typeof query.fish_id === "string" ? query.fish_id : undefined,
   };
+
   const data = await getLakeCatches(lakeId, catchesParams);
 
   return (

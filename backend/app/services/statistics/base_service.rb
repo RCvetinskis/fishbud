@@ -6,13 +6,26 @@ module Statistics
       '90d' => 90.days,
       'all' => nil
     }.freeze
+    DEFAULT_PERIOD = '7d'.freeze
+    DEFAULT_FISH = 'all'.freeze
+
     LIMIT = 25
 
-    def initialize(period: '7d')
-      @period = PERIODS.key?(period) ? period : '7d'
+    def initialize(period: DEFAULT_PERIOD, selected_fish: DEFAULT_FISH,
+                   current_user: nil, page: nil)
+      @period        = PERIODS.key?(period) ? period : DEFAULT_PERIOD
+      @selected_fish = normalize_fish(selected_fish)
+      @current_user  = current_user
+      @page          = page
     end
 
     private
+
+    attr_reader :period, :selected_fish, :current_user, :page
+
+    def normalize_fish(value)
+      value.presence || DEFAULT_FISH
+    end
 
     def filter_by_period(relation, column:)
       return relation if @period == 'all'
@@ -24,6 +37,15 @@ module Statistics
         start_date,
         Time.current
       )
+    end
+
+    def pagination_dict(collection)
+      {
+        current_page: collection.current_page,
+        total_pages: collection.total_pages,
+        total_count: collection.total_count,
+        per_page: collection.limit_value
+      }
     end
   end
 end

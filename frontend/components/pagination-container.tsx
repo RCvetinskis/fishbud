@@ -16,14 +16,20 @@ import {
   PaginationLink,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   currentPage: number;
   totalPages: number;
+
+  siblingCount?: number;
 };
 
-const PaginationContainer = ({ currentPage, totalPages }: Props) => {
+const PaginationContainer = ({
+  currentPage,
+  totalPages,
+  siblingCount = 1,
+}: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,27 +52,48 @@ const PaginationContainer = ({ currentPage, totalPages }: Props) => {
     router.push(query ? `${pathname}?${query}` : pathname, {
       scroll: false,
     });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const getVisiblePages = () => {
-    const pages = new Set<number>([
-      1,
-      totalPages,
-      currentPage,
-      currentPage - 1,
-      currentPage + 1,
-    ]);
+  const getPageItems = (): (number | "ellipsis")[] => {
+    const totalNumbers = siblingCount * 2 + 5; // first + last + current + 2 ellipses
+    if (totalPages <= totalNumbers) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
 
-    return [...pages]
-      .filter((page) => page >= 1 && page <= totalPages)
-      .sort((a, b) => a - b);
+    const leftSibling = Math.max(currentPage - siblingCount, 2);
+    const rightSibling = Math.min(currentPage + siblingCount, totalPages - 1);
+
+    const showLeftEllipsis = leftSibling > 2;
+    const showRightEllipsis = rightSibling < totalPages - 1;
+
+    const items: (number | "ellipsis")[] = [1];
+
+    if (showLeftEllipsis) {
+      items.push("ellipsis");
+    } else {
+      // fill in the numbers between 1 and leftSibling
+      for (let p = 2; p < leftSibling; p++) items.push(p);
+    }
+
+    for (let p = leftSibling; p <= rightSibling; p++) items.push(p);
+
+    if (showRightEllipsis) {
+      items.push("ellipsis");
+    } else {
+      for (let p = rightSibling + 1; p < totalPages; p++) items.push(p);
+    }
+
+    items.push(totalPages);
+    return items;
   };
 
-  const visiblePages = getVisiblePages();
+  const pageItems = getPageItems();
 
   return (
-    <Pagination>
-      <PaginationContent>
+    <Pagination className="py-2">
+      <PaginationContent className="gap-1 sm:gap-2">
         <PaginationItem>
           <Button
             variant="ghost"
@@ -91,34 +118,41 @@ const PaginationContainer = ({ currentPage, totalPages }: Props) => {
           </Button>
         </PaginationItem>
 
-        {visiblePages.map((page, index) => {
-          const previousPage = visiblePages[index - 1];
-          const hasGap = previousPage && page - previousPage > 1;
+        {pageItems.map((item, index) => {
+          if (item === "ellipsis") {
+            return (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            );
+          }
+
+          const page = item;
+          const href = (() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (page === 1) params.delete("page");
+            else params.set("page", String(page));
+            const query = params.toString();
+            return query ? `${pathname}?${query}` : pathname;
+          })();
 
           return (
-            <React.Fragment key={page}>
-              {hasGap && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              <PaginationItem>
-                <PaginationLink
-                  href={`${pathname}?${new URLSearchParams({
-                    ...Object.fromEntries(searchParams.entries()),
-                    ...(page === 1 ? {} : { page: String(page) }),
-                  }).toString()}`}
-                  isActive={page === currentPage}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    goToPage(page);
-                  }}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            </React.Fragment>
+            <PaginationItem key={page}>
+              <PaginationLink
+                href={href}
+                isActive={page === currentPage}
+                onClick={(event) => {
+                  event.preventDefault();
+                  goToPage(page);
+                }}
+                className={cn(
+                  "min-w-9",
+                  page === currentPage && "font-semibold",
+                )}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
           );
         })}
 

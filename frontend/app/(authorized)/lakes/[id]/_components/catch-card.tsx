@@ -2,16 +2,11 @@
 
 import {
   CalendarDays,
-  Fish,
   UserRound,
   Ruler,
   Weight,
   Waves,
   FishSymbol,
-  Thermometer,
-  Wind,
-  Compass,
-  Gauge,
 } from "lucide-react";
 
 import { TCatch } from "@/types";
@@ -31,7 +26,10 @@ const CatchCard = ({ catchData }: Props) => {
   const hasMeasurements = catchData.weight != null || catchData.length != null;
 
   return (
-    <Card className="group relative flex p-0 h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5">
+    <Card
+      id={`catch-${catchData.id}`}
+      className="group relative flex p-0 h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5"
+    >
       {/* Photo or decorative header */}
       <div className="relative isolate h-28 overflow-hidden rounded-t-xl sm:h-32 ">
         {hasImage ? (

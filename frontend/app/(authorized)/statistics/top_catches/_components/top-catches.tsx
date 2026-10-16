@@ -10,8 +10,7 @@ import {
   Fish,
 } from "lucide-react";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { useState } from "react";
+
 import {
   Card,
   CardContent,
@@ -19,108 +18,165 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { TTopCatch } from "@/services/statistics-service";
 import ImageDialog from "@/components/image-dialog";
+import { cn } from "@/lib/utils";
+import { TOP_STATS_LIMIT } from "@/lib/constants";
 
 type Props = {
   data: TTopCatch[];
+  currentPage?: number;
+  perPage?: number;
 };
 
-const TopCatches = ({ data }: Props) => {
+const medalStyles: Record<number, string> = {
+  1: "bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md shadow-amber-500/30",
+  2: "bg-gradient-to-br from-slate-300 to-slate-500 text-white shadow-md shadow-slate-400/30",
+  3: "bg-gradient-to-br from-orange-400 to-orange-700 text-white shadow-md shadow-orange-500/30",
+};
+
+const TopCatches = ({
+  data,
+  currentPage = 1,
+  perPage = TOP_STATS_LIMIT,
+}: Props) => {
+  const startRank = (currentPage - 1) * perPage + 1;
+
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-amber-500" />
-          <CardTitle>Biggest catches</CardTitle>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10">
+            <Trophy className="h-5 w-5 text-amber-500" />
+          </div>
+          <div>
+            <CardTitle>Biggest catches</CardTitle>
+            <CardDescription>
+              The community&apos;s biggest catches in the selected period.
+            </CardDescription>
+          </div>
         </div>
-        <CardDescription>
-          The community's biggest catches in the selected period.
-        </CardDescription>
       </CardHeader>
 
       <CardContent>
         {data.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            No catches with recorded lengths for this period.
-          </p>
+          <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+            <Fish className="h-10 w-10 text-muted-foreground/50" />
+            <p className="text-sm text-muted-foreground">
+              No catches with recorded lengths for this period.
+            </p>
+          </div>
         ) : (
-          <div className="space-y-3">
-            {data.map((item, index) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 rounded-lg border p-3"
-              >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {data.map((item, index) => {
+              const rank = startRank + index;
+
+              return (
                 <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
-                    index === 0
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                  key={item.id}
+                  className="group relative flex flex-col overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
                 >
-                  {index + 1}
-                </div>
+                  {/* Image header */}
+                  <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
+                    {item.image_url ? (
+                      <ImageDialog
+                        src={item.image_url}
+                        alt={item.fish || "Caught fish"}
+                      >
+                        <img
+                          src={item.image_url}
+                          alt={item.fish || "Caught fish"}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      </ImageDialog>
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <Fish className="h-12 w-12 text-muted-foreground/40" />
+                      </div>
+                    )}
 
-                {item.image_url ? (
-                  <ImageDialog
-                    src={item.image_url}
-                    alt={item.fish || "Caught fish"}
-                  >
-                    <img
-                      src={item.image_url}
-                      alt={item.fish || "Caught fish"}
-                      className="h-24 w-24 rounded-lg object-cover transition-transform duration-200 hover:scale-105"
-                      loading="lazy"
-                    />
-                  </ImageDialog>
-                ) : (
-                  <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <Fish className="h-9 w-9 text-muted-foreground" />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">
-                    {item.fish || "Unknown fish"}
-                  </p>
+                    {/* Gradient overlay for readability */}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
 
-                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <UserRound className="h-3.5 w-3.5 shrink-0" />
-                      {item.username || "Unknown angler"}
-                    </span>
-
-                    <Link
-                      href={`/lakes/${item.lake_id}`}
-                      className="flex max-w-45 items-center gap-1 text-primary underline underline-offset-4 hover:opacity-80"
+                    {/* Rank badge — global rank */}
+                    <div
+                      className={cn(
+                        "absolute left-3 top-3 flex h-9 min-w-9 items-center justify-center rounded-full px-2 text-sm font-bold",
+                        medalStyles[rank] ??
+                          "bg-muted/90 text-muted-foreground backdrop-blur-sm",
+                      )}
                     >
-                      <MapPin className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate">
-                        {item.lake_name || "Unknown lake"}
-                      </span>
-                    </Link>
+                      #{rank}
+                    </div>
 
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-                      {item.date
-                        ? new Date(`${item.date}T12:00:00`).toLocaleDateString()
-                        : "Unknown date"}
-                    </span>
+                    {/* Length badge */}
+                    {item.length != null && (
+                      <Badge
+                        variant="secondary"
+                        className="absolute right-3 top-3 gap-1 bg-background/90 backdrop-blur-sm"
+                      >
+                        <Ruler className="h-3.5 w-3.5" />
+                        {item.length} cm
+                      </Badge>
+                    )}
+
+                    {/* Fish name overlay */}
+                    <div className="absolute bottom-2 left-3 right-3">
+                      <p className="truncate text-base font-semibold text-white drop-shadow-md">
+                        {item.fish || "Unknown fish"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-1 flex-col gap-3 p-3">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <UserRound className="h-4 w-4 shrink-0" />
+                        <span className="truncate">
+                          {item.username || "Unknown angler"}
+                        </span>
+                      </div>
+
+                      <Link
+                        href={`/lakes/${item.lake_id}&catch_id=${item.id}`}
+                        className="flex items-center gap-2 text-primary underline-offset-4 hover:underline"
+                      >
+                        <MapPin className="h-4 w-4 shrink-0" />
+                        <span className="truncate">
+                          {item.lake_name || "Unknown lake"}
+                        </span>
+                      </Link>
+
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <CalendarDays className="h-4 w-4 shrink-0" />
+                        <span>
+                          {item.date
+                            ? new Date(
+                                `${item.date}T12:00:00`,
+                              ).toLocaleDateString()
+                            : "Unknown date"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Footer stats */}
+                    <div className="mt-auto flex items-center justify-between border-t pt-3 text-sm">
+                      <span className="flex items-center gap-1.5 font-semibold">
+                        <Ruler className="h-4 w-4 text-muted-foreground" />
+                        {item.length != null ? `${item.length} cm` : "—"}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <Weight className="h-4 w-4" />
+                        {item.weight != null ? `${item.weight} kg` : "—"}
+                      </span>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex shrink-0 flex-col items-end gap-1 text-sm">
-                  <span className="flex items-center gap-1 font-semibold">
-                    <Ruler className="h-4 w-4 text-muted-foreground" />
-                    {item.length != null ? `${item.length} cm` : "—"}
-                  </span>
-
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <Weight className="h-3.5 w-3.5" />
-                    {item.weight != null ? `${item.weight} kg` : "—"}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>

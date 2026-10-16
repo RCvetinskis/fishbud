@@ -43,7 +43,7 @@ export function LoginCard() {
           password: data.password,
         },
       });
-
+      console.log("RESPONSE:", response);
       if (!response.data.data.error) {
         toast.add({
           title: response.data.message,

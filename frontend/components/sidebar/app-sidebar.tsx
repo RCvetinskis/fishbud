@@ -15,9 +15,11 @@ import { ThemeToggle } from "../theme-toggle";
 import {
   ChartColumn,
   ChartNoAxesColumn,
+  Cloudy,
   Fish,
   Map,
   PersonStanding,
+  TentTree,
   TrendingUp,
 } from "lucide-react";
 import UserDropdown from "./user-dropdown";
@@ -58,16 +60,29 @@ export function AppSidebar() {
               </SidebarMenuSubItem>
 
               <SidebarMenuSubItem>
+                <SidebarMenuSubButton href={"/statistics/weather_statistics"}>
+                  <Cloudy />
+                  Weather Stats
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+
+              <SidebarMenuSubItem>
                 <SidebarMenuSubButton href={"/statistics/top_catches"}>
                   <TrendingUp />
                   Top Catches
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+
+              <SidebarMenuSubItem>
+                <SidebarMenuSubButton href={"/statistics/top_fishing_trips"}>
+                  <TentTree />
+                  Top Fishing Trips
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <Link href={"/profile"}>
-              {" "}
               <SidebarMenuButton>
                 <PersonStanding />
                 <span>Profile</span>

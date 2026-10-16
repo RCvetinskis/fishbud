@@ -130,7 +130,11 @@ const CatchForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Fish</FieldLabel>
-                  <FishSelect value={field.value} onChange={field.onChange} />
+                  <FishSelect
+                    className="sm:w-full"
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}

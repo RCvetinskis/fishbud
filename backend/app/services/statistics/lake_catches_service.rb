@@ -1,10 +1,5 @@
 module Statistics
   class LakeCatchesService < BaseService
-    def initialize(period: nil, current_user: nil)
-      super(period: period)
-      @current_user = current_user
-    end
-
     def call
       catches = filtered_catches
 
@@ -22,46 +17,79 @@ module Statistics
 
     private
 
-    attr_reader :current_user
-
     def filtered_catches
-      catches = filter_by_period(
+      scope = filter_by_period(
         Catch.all,
         column: 'COALESCE(catches.caught_at, catches.created_at)'
       )
-      catches = catches.where(user_id: current_user.id) if current_user
-      catches
+      scope = scope.where(fish_id: selected_fish) if selected_fish != 'all'
+      scope = scope.where(user_id: current_user.id) if current_user
+      scope
     end
 
     def catches_by_lake(catches)
-      catches.joins(:lake)
-             .group('lakes.name')
-             .order(Arel.sql('COUNT(catches.id) DESC'))
-             .count
-             .map { |lake, count| { lake: lake, count: count } }
+      Lake.joins(:catches)
+          .where(catches: { id: catches.select(:id) })
+          .select('lakes.id, lakes.name AS lake, COUNT(catches.id) AS count')
+          .group('lakes.id, lakes.name')
+          .order(Arel.sql('COUNT(catches.id) DESC'))
+          .limit(10)
+          .map do |record|
+        {
+          lake: record.lake,
+          count: record.count.to_i
+        }
+      end
     end
 
     def catches_by_weather(catches)
       Weather.joins(:catch)
              .where(catches: { id: catches.select(:id) })
+             .select(
+               :temperature,
+               :wind_direction,
+               :pressure,
+               'COUNT(*) AS count'
+             )
              .group(:temperature, :wind_direction, :pressure)
-             .count
-             .map do |(temperature, wind_direction, pressure), count|
+             .order(Arel.sql('COUNT(*) DESC'))
+             .limit(10)
+             .map do |weather|
         {
-          temperature: temperature,
-          wind_direction: Weather.compass_direction(wind_direction),
-          pressure: pressure,
-          count: count
+          temperature: weather.temperature,
+          wind_direction: Weather.compass_direction(weather.wind_direction),
+          pressure: weather.pressure,
+          count: weather.count.to_i
         }
       end
     end
 
     def catches_by_date(catches)
-      catches.group(
-        Arel.sql('DATE(COALESCE(catches.caught_at, catches.created_at))')
-      ).count
-             .sort_by { |date, count| [-count, -date.jd] }
-             .map { |date, count| { date: date, count: count } }
+      relation = catches.except(:select, :order)
+
+      if period == 'all'
+        start_date = 52.weeks.ago.beginning_of_week
+
+        relation = relation.where(
+          'COALESCE(catches.caught_at, catches.created_at) >= ?',
+          start_date
+        )
+      end
+
+      date_sql = Arel.sql(
+        'DATE(COALESCE(catches.caught_at, catches.created_at))'
+      )
+
+      relation
+        .group(date_sql)
+        .count
+        .map do |date, count|
+          {
+            date: date.to_s,
+            count: count
+          }
+        end
+        .sort_by { |record| record[:date] }
     end
 
     def top_lake(catches)

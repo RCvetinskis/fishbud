@@ -1,6 +1,6 @@
 module Users
   class AuthController < ApplicationController
-    before_action :authenticate_user!, only: %i[current_user]
+    before_action :authenticate_user!, only: %i[me]
 
     def refresh
       raw_token = request.headers['X-Refresh-Token']
@@ -34,7 +34,7 @@ module Users
     end
 
     def me
-      render_success(current_user, UserSerializer)
+      render_success(serialize_resource(current_user, UserSerializer))
     end
   end
 end

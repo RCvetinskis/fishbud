@@ -10,55 +10,72 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
 import { TWeatherStatistics } from "@/types";
+
 type Props = {
   weatherStatistics: TWeatherStatistics;
 };
-const WeatherStatistics = async ({ weatherStatistics }: Props) => {
-  const items = [
+
+type WeatherRange = {
+  min: number;
+  max: number;
+  catch_count: number;
+};
+
+type WeatherDirection = {
+  direction: string;
+  catch_count: number;
+};
+
+type WeatherEntry = WeatherRange | WeatherDirection;
+
+type WeatherItem = {
+  title: string;
+  data: WeatherEntry[];
+  format: (entry: WeatherEntry) => string;
+  icon: typeof Thermometer;
+  color: string;
+  background: string;
+};
+
+const formatWeatherEntry = (entry: WeatherEntry, unit: string): string => {
+  if ("direction" in entry) {
+    return entry.direction;
+  }
+
+  return `${entry.min}–${entry.max}${unit}`;
+};
+
+const WeatherStatistics = ({ weatherStatistics }: Props) => {
+  const items: WeatherItem[] = [
     {
       title: "Temperature",
-      value: weatherStatistics.best_temperature
-        ? `${weatherStatistics.best_temperature.min}–${weatherStatistics.best_temperature.max}°C`
-        : "No data",
-      description: weatherStatistics.best_temperature
-        ? `${weatherStatistics.best_temperature.catch_count} catches in this range`
-        : "No temperature data available",
+      data: weatherStatistics.best_temperatures,
+      format: (entry) => formatWeatherEntry(entry, "°C"),
       icon: Thermometer,
       color: "text-orange-500",
       background: "bg-orange-500/10",
     },
     {
       title: "Wind speed",
-      value: weatherStatistics.best_wind_speed
-        ? `${weatherStatistics.best_wind_speed.min}–${weatherStatistics.best_wind_speed.max} km/h`
-        : "No data",
-      description: weatherStatistics.best_wind_speed
-        ? `${weatherStatistics.best_wind_speed.catch_count} catches in this range`
-        : "No wind data available",
+      data: weatherStatistics.best_wind_speeds,
+      format: (entry) => formatWeatherEntry(entry, " km/h"),
       icon: Wind,
       color: "text-sky-500",
       background: "bg-sky-500/10",
     },
     {
       title: "Wind direction",
-      value: weatherStatistics.best_wind_direction?.direction ?? "No data",
-      description: weatherStatistics.best_wind_direction
-        ? `${weatherStatistics.best_wind_direction.catch_count} catches with this wind`
-        : "No wind direction data available",
+      data: weatherStatistics.best_wind_directions,
+      format: (entry) => formatWeatherEntry(entry, ""),
       icon: Compass,
       color: "text-teal-500",
       background: "bg-teal-500/10",
     },
     {
       title: "Air pressure",
-      value: weatherStatistics.best_pressure
-        ? `${weatherStatistics.best_pressure.min}–${weatherStatistics.best_pressure.max} hPa`
-        : "No data",
-      description: weatherStatistics.best_pressure
-        ? `${weatherStatistics.best_pressure.catch_count} catches in this range`
-        : "No pressure data available",
+      data: weatherStatistics.best_pressures,
+      format: (entry) => formatWeatherEntry(entry, " hPa"),
       icon: Gauge,
       color: "text-violet-500",
       background: "bg-violet-500/10",
@@ -75,7 +92,7 @@ const WeatherStatistics = async ({ weatherStatistics }: Props) => {
           </div>
 
           <h2 className="text-xl font-bold tracking-tight">
-            Best fishing conditions
+            Weather fishing conditions
           </h2>
 
           <p className="mt-1 text-sm text-muted-foreground">
@@ -93,12 +110,17 @@ const WeatherStatistics = async ({ weatherStatistics }: Props) => {
         {items.map((item) => {
           const Icon = item.icon;
 
+          const maxCount = Math.max(
+            1,
+            ...item.data.map((entry) => entry.catch_count),
+          );
+
           return (
             <Card
               key={item.title}
               className="border-border/60 transition-colors hover:border-emerald-500/30"
             >
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {item.title}
                 </CardTitle>
@@ -111,12 +133,39 @@ const WeatherStatistics = async ({ weatherStatistics }: Props) => {
               </CardHeader>
 
               <CardContent>
-                <div className="text-2xl font-bold tracking-tight">
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {item.description}
-                </p>
+                {item.data.length > 0 ? (
+                  <div className="space-y-3">
+                    {item.data.slice(0, 10).map((entry, index) => (
+                      <div key={`${item.title}-${index}`} className="space-y-1">
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="min-w-0 truncate font-medium">
+                            <span className="mr-2 text-xs text-muted-foreground">
+                              {index + 1}.
+                            </span>
+                            {item.format(entry)}
+                          </span>
+
+                          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                            {entry.catch_count}
+                          </span>
+                        </div>
+
+                        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-emerald-500 transition-all"
+                            style={{
+                              width: `${(entry.catch_count / maxCount) * 100}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="py-6 text-center text-sm text-muted-foreground">
+                    No data available
+                  </p>
+                )}
               </CardContent>
             </Card>
           );
@@ -132,8 +181,9 @@ const WeatherStatistics = async ({ weatherStatistics }: Props) => {
           <div>
             <p className="text-sm font-semibold">Learn from your catches</p>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              These weatherStatistics highlight the weather conditions most
-              frequently associated with catches recorded in Fishbud.
+              These rankings show the 10 weather ranges or directions most
+              frequently associated with recorded catches. They reflect catch
+              frequency, not necessarily fishing success rates.
             </p>
           </div>
         </CardContent>

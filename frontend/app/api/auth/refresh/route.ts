@@ -25,7 +25,10 @@ export async function POST(request: NextRequest) {
       },
     );
 
-    const accessToken = response.headers["authorization"];
+    const accessToken = response.headers["authorization"]?.replace(
+      /^Bearer\s+/i,
+      "",
+    );
     const newRefreshToken = response.headers["x-refresh-token"];
 
     const result = NextResponse.json(response.data);
