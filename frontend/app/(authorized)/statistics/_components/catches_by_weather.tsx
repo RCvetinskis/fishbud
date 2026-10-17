@@ -39,8 +39,7 @@ const CatchesByWeather = ({ data }: Props) => {
       pressure: item.pressure,
       catches: item.count,
     }))
-    .sort((a, b) => b.catches - a.catches)
-    .slice(0, 10);
+    .sort((a, b) => b.catches - a.catches);
 
   return (
     <Card>

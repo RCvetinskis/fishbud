@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   namespace :statistics do
     resources :weather, only: [:index]
+    resources :lures, only: [:index]
 
     resources :catches, only: [:index] do
       collection do

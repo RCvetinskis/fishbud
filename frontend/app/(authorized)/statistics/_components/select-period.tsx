@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/select";
 import { periods } from "@/lib/constants";
 import { Period, useStatisticsStore } from "@/stores/statistics-store";
-import { CalendarDays } from "lucide-react";
-import { useEffect } from "react";
+import { CalendarDays, Loader2 } from "lucide-react";
+import { useEffect, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const isPeriod = (value: string | null): value is Period =>
@@ -20,6 +20,7 @@ const SelectPeriod = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const period = useStatisticsStore((state) => state.period);
   const setPeriod = useStatisticsStore((state) => state.setPeriod);
@@ -28,6 +29,7 @@ const SelectPeriod = () => {
     const urlPeriod = searchParams.get("period");
     setPeriod(isPeriod(urlPeriod) ? urlPeriod : "7d");
   }, [searchParams, setPeriod]);
+
   const handlePeriodChange = (value: Period | null) => {
     if (!value) return;
 
@@ -35,34 +37,36 @@ const SelectPeriod = () => {
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("period", value);
-
-    router.replace(`${pathname}?${params.toString()}`, {
-      scroll: false,
+    params.delete("page");
+    startTransition(() => {
+      router.replace(`${pathname}?${params.toString()}`, {
+        scroll: false,
+      });
     });
   };
-  return (
-    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-      <div>
-        <h2 className="text-lg font-semibold">Catch statistics</h2>
-        <p className="text-sm text-muted-foreground">
-          Explore catches by lake and weather conditions.
-        </p>
-      </div>
 
-      <Select value={period} onValueChange={handlePeriodChange}>
-        <SelectTrigger className="w-full sm:w-44">
+  return (
+    <Select value={period} onValueChange={handlePeriodChange}>
+      <SelectTrigger
+        className="w-full sm:w-44"
+        disabled={isPending}
+        data-pending={isPending}
+      >
+        {isPending ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
           <CalendarDays className="mr-2 h-4 w-4" />
-          <SelectValue placeholder="Select period" />
-        </SelectTrigger>
-        <SelectContent>
-          {periods.map((item) => (
-            <SelectItem key={item.value} value={item.value}>
-              {item.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+        )}
+        <SelectValue placeholder="Select period" />
+      </SelectTrigger>
+      <SelectContent>
+        {periods.map((item) => (
+          <SelectItem key={item.value} value={item.value}>
+            {item.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 

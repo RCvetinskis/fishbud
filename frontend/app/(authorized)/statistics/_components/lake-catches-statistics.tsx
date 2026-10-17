@@ -1,8 +1,5 @@
-"use client";
-
-import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { getPeriodStart, useStatisticsStore } from "@/stores/statistics-store";
+
 import type { CatchesStatistics } from "@/services/statistics-service";
 
 import SelectPeriod from "./select-period";
@@ -16,23 +13,14 @@ type Props = {
 };
 
 const LakeCatchesStatistics = ({ data }: Props) => {
-  const { period } = useStatisticsStore();
-
-  const filteredDates = useMemo(() => {
-    const start = getPeriodStart(period);
-
-    return data.catches_by_date.filter(({ date }) => {
-      if (!start) return true;
-
-      const [year, month, day] = date.split("-").map(Number);
-      const recordDate = new Date(year, month - 1, day);
-
-      return recordDate >= start && recordDate <= new Date();
-    });
-  }, [data.catches_by_date, period]);
   return (
     <Card className="space-y-4 p-4">
-      <SelectPeriod />
+      <div>
+        <h2 className="text-lg font-semibold">Catch statistics</h2>
+        <p className="text-sm text-muted-foreground">
+          Explore catches by lake and weather conditions.
+        </p>
+      </div>
 
       <TopStats
         topFish={data.top_fish}
@@ -46,7 +34,7 @@ const LakeCatchesStatistics = ({ data }: Props) => {
         <CatchesByWeather data={data.catches_by_weather} />
       </div>
 
-      <RecentCatchActivity filteredDates={filteredDates} />
+      <RecentCatchActivity filteredDates={data.catches_by_date} />
     </Card>
   );
 };

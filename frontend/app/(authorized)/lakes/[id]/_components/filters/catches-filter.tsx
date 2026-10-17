@@ -175,6 +175,7 @@ const CatchesFilter = () => {
 
         <div className="w-full sm:w-52">
           <FishSelect
+            syncToUrl
             value={selectedFishId}
             onChange={(fishId) => {
               updateParams({
