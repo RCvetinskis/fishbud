@@ -25,6 +25,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import axios from "axios";
+import { getErrorMessage } from "@/lib/axios-helper";
 
 export function LoginCard() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export function LoginCard() {
           password: data.password,
         },
       });
-      console.log("RESPONSE:", response);
+
       if (!response.data.data.error) {
         toast.add({
           title: response.data.message,
@@ -57,10 +58,8 @@ export function LoginCard() {
         });
       }
     } catch (error: any) {
-      const errorMessage = error.message || "Login Failed";
-
       toast.add({
-        title: errorMessage,
+        title: getErrorMessage(error),
         type: "error",
       });
     } finally {

@@ -4,6 +4,7 @@ import PaginationContainer from "@/components/pagination-container";
 import { isPeriod } from "../layout";
 import type { Period } from "@/stores/statistics-store";
 import { TPaginatedResponse } from "@/types";
+import { TLureStatisticsSummary } from "@/services/statistics-service";
 
 export type StatisticsSearchParams = {
   scope?: string;
@@ -25,28 +26,31 @@ export type StatisticsFilters = {
   fishId: string | undefined;
   page: number;
 };
-
+type TStatisticsPaginatedResponse<T> = TPaginatedResponse<T> & {
+  summary?: TLureStatisticsSummary | null;
+};
 type Props<T> = {
   searchParams: Promise<StatisticsSearchParams>;
-
   useFishFilter?: boolean;
-
   paginated?: boolean;
 
   fetchData: (
     filters: StatisticsFilters,
-  ) => Promise<T | TPaginatedResponse<T> | null>;
+  ) => Promise<T | TStatisticsPaginatedResponse<T> | null>;
 
-  render: (data: T, pagination: TPaginationMeta | null) => React.ReactNode;
+  render: (
+    data: T,
+    pagination: TPaginationMeta | null,
+    summary: TLureStatisticsSummary | null,
+  ) => React.ReactNode;
 
   skeleton: React.ReactNode;
-
   emptyTitle?: string;
 };
 
 function isPaginatedResponse<T>(
   value: unknown,
-): value is TPaginatedResponse<T> {
+): value is TStatisticsPaginatedResponse<T> {
   return (
     typeof value === "object" &&
     value !== null &&
@@ -96,17 +100,19 @@ const StatisticsPageShell = async <T,>({
 
     let items: T;
     let pagination: TPaginationMeta | null = null;
+    let summary: TLureStatisticsSummary | null = null;
 
     if (paginated && isPaginatedResponse<T>(result)) {
       items = result.data;
       pagination = result.meta;
+      summary = result.summary ?? null;
     } else {
       items = result as T;
     }
 
     return (
       <div className="space-y-4">
-        {render(items, pagination)}
+        {render(items, pagination, summary)}
 
         {pagination && pagination.total_pages > 1 && (
           <PaginationContainer

@@ -1,6 +1,7 @@
 import { api } from "@/handlers/api-handler";
 import { Period } from "@/stores/statistics-store";
 import {
+  TCatch,
   TCrudDate,
   TMeta,
   TPaginatedResponse,
@@ -182,6 +183,56 @@ export const getTopFishingTripsStatistics = async (
     return {
       data: [],
       meta: null,
+    };
+  }
+};
+
+export type TLureStatistic = {
+  lure: string;
+  catches_count: number;
+  fish_name: string;
+};
+export type TLureStatisticsSummary = {
+  recorded_catches: number;
+  unique_lures: number;
+  unique_fish: number;
+};
+type TLureStatisticsResponse = TPaginatedResponse<TLureStatistic[]> & {
+  summary: TLureStatisticsSummary | null;
+};
+export const getLureStatistics = async (
+  period: Period = "7d",
+  scope: TScope,
+  fish_id: string = "all",
+  page: number = 1,
+): Promise<TLureStatisticsResponse> => {
+  try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(`${baseUrl}/api/statistics/lures`, {
+      params: {
+        period,
+        scope,
+        fish_id,
+        page: String(page),
+      },
+      headers: { Cookie: cookieHeader },
+    });
+
+    const { items, meta, summary } = response.data.data;
+
+    return {
+      data: items ?? [],
+      meta,
+      summary,
+    };
+  } catch (error) {
+    console.error("Failed to fetch lure statistics:", error);
+    return {
+      data: [],
+      meta: null,
+      summary: null,
     };
   }
 };

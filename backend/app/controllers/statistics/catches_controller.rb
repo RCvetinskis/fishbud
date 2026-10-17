@@ -35,6 +35,8 @@ module Statistics
     end
 
     def top_fishing_trips
+      # TODO: on total fish count add select button which should populate the list of catches durning the trip
+      # TODO: Each catch should display the fish name, lure name, and weather conditions, temperature, wind speed, pressure, and wind direction
       result = Statistics::TopFishingTripsService.new(
         period: @period,
         selected_fish: @fish,
