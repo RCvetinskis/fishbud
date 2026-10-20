@@ -39,9 +39,7 @@ const CatchesByLake = ({ data }: Props) => {
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Catches by lake</CardTitle>
-        <CardDescription>
-          Which lakes have the most recorded catches?
-        </CardDescription>
+        <CardDescription>Top 10 lakes by catch count.</CardDescription>
       </CardHeader>
       <CardContent>
         {lakeStats.length > 0 ? (

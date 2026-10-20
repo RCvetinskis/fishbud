@@ -1,19 +1,29 @@
+import { TSortParams } from "@/app/(authorized)/statistics/_components/statistics-page-shell";
 import { api } from "@/handlers/api-handler";
 import { Period } from "@/stores/statistics-store";
-import { TCrudDate, TWeatherStatistics } from "@/types";
+import {
+  TCatch,
+  TCrudDate,
+  TLure,
+  TMeta,
+  TPaginatedResponse,
+  TWeatherStatistics,
+} from "@/types";
 import axios from "axios";
 import { cookies } from "next/headers";
 export type TScope = "all" | "mine";
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 export const getWeatherStatistics = async (
+  period: Period = "7d",
   scope: TScope,
+  fish_id: string = "all",
 ): Promise<TWeatherStatistics | null> => {
   try {
     const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
 
     const response = await axios.get(`${baseUrl}/api/statistics/weather`, {
-      params: { scope },
+      params: { period, scope, fish_id },
       headers: {
         Cookie: cookieHeader,
       },
@@ -66,12 +76,13 @@ export type CatchesStatistics = {
 export const getLakeCatchStatistics = async (
   period: Period = "7d",
   scope: TScope,
+  fish_id: string = "all",
 ): Promise<CatchesStatistics | null> => {
   try {
     const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
     const response = await axios.get(`${baseUrl}/api/statistics/catches`, {
-      params: { period, scope },
+      params: { period, scope, fish_id },
       headers: {
         Cookie: cookieHeader,
       },
@@ -95,17 +106,37 @@ export type TTopCatch = {
   length?: string;
   image_url?: string;
 };
+
 export const getTopCatchesStatistics = async (
   period: Period = "7d",
-): Promise<TTopCatch[]> => {
+  scope: TScope,
+  fish_id: string = "all",
+  page = 1,
+): Promise<TPaginatedResponse<TTopCatch[]>> => {
   try {
-    const response = await api.get("/statistics/catches/top_catches", {
-      params: { period },
-    });
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+    const response = await axios.get(
+      `${baseUrl}/api/statistics/catches/top_catches`,
+      {
+        params: { period, scope, fish_id, page: String(page) },
+        headers: {
+          Cookie: cookieHeader,
+        },
+      },
+    );
 
-    return response.data.data;
+    const { items, meta } = response.data.data;
+
+    return {
+      data: items ?? [],
+      meta,
+    };
   } catch (error) {
-    return [];
+    return {
+      meta: null,
+      data: [],
+    };
   }
 };
 
@@ -122,16 +153,126 @@ export type TTopFishingTripStatistic = {
 
   notes?: string;
 } & TCrudDate;
+
 export const getTopFishingTripsStatistics = async (
   period: Period = "7d",
-): Promise<TTopFishingTripStatistic[]> => {
+  scope: TScope,
+  page = 1,
+): Promise<TPaginatedResponse<TTopFishingTripStatistic[]>> => {
   try {
-    const response = await api.get("/statistics/catches/top_fishing_trips", {
-      params: { period },
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(
+      `${baseUrl}/api/statistics/catches/top_fishing_trips`,
+      {
+        params: {
+          period,
+          scope,
+          page: String(page),
+        },
+        headers: { Cookie: cookieHeader },
+      },
+    );
+
+    const { items, meta } = response.data.data;
+
+    return {
+      data: items ?? [],
+      meta,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      meta: null,
+    };
+  }
+};
+
+export type TLureStatistic = {
+  lure: string;
+  catches_count: number;
+  fish_name: string;
+  lure_id: number;
+};
+export type TLureStatisticsSummary = {
+  recorded_catches: number;
+  unique_lures: number;
+  unique_fish: number;
+};
+type TLureStatisticsResponse = TPaginatedResponse<TLureStatistic[]> & {
+  summary: TLureStatisticsSummary | null;
+};
+export const getLureStatistics = async (
+  period: Period = "7d",
+  scope: TScope,
+  fish_id: string = "all",
+  lure_id: string = "all",
+  page: number = 1,
+  sortParams?: TSortParams,
+): Promise<TLureStatisticsResponse> => {
+  try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await axios.get(`${baseUrl}/api/statistics/lures`, {
+      params: {
+        period,
+        scope,
+        fish_id,
+        lure_id,
+        page: String(page),
+        sort_params: sortParams,
+      },
+      headers: { Cookie: cookieHeader },
     });
+
+    const { items, meta, summary } = response.data.data;
+
+    return {
+      data: items ?? [],
+      meta,
+      summary,
+    };
+  } catch (error) {
+    console.error("Failed to fetch lure statistics:", error);
+    return {
+      data: [],
+      meta: null,
+      summary: null,
+    };
+  }
+};
+
+export type TLureStatsInsight = {
+  id: number;
+  name: string;
+  total_catches: number;
+  description?: string;
+  most_common_fish: {
+    id: number;
+    name: string;
+    catches_count: number;
+  } | null;
+  most_common_weather: {
+    temperature_min: string | number;
+    temperature_max: string | number;
+    pressure_min: string | number;
+    pressure_max: string | number;
+    wind_direction: string;
+    catches_count: number;
+  } | null;
+};
+
+export const getLureStatisticById = async (
+  id: number | string,
+): Promise<TLureStatsInsight | null> => {
+  try {
+    console.log("id", id);
+    const response = await api.get(`statistics/lures/${id}`);
 
     return response.data.data;
   } catch (error) {
-    return [];
+    return null;
   }
 };

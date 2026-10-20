@@ -1,6 +1,6 @@
 class CatchSerializer < ActiveModel::Serializer
   attributes :id, :fish_name, :caught_by, :lure, :description, :created_at, :updated_at, :fish_id, :lake_id, :user_id,
-             :weight, :length, :image_url, :weather, :caught_at
+             :weight, :length, :image_url, :weather, :caught_at, :lake_name
 
   def fish_name
     object.fish.name.capitalize
@@ -50,8 +50,12 @@ class CatchSerializer < ActiveModel::Serializer
 
     {
       name: object.lure.name,
-      description: object.lure.description,
-      lure_type: object.lure.lure_type
+      lure_type: object.lure.lure_type,
+      id: object.lure.id
     }
+  end
+
+  def lake_name
+    object.lake.name
   end
 end

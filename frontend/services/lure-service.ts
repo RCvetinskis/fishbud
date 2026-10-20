@@ -19,6 +19,7 @@ export const getLures = async (): Promise<TLure[]> => {
     return [];
   }
 };
+
 type TLureBody = {
   lure: {
     name: string;

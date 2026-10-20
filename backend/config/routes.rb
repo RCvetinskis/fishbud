@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   namespace :statistics do
     resources :weather, only: [:index]
+    resources :lures, only: %i[index show]
 
     resources :catches, only: [:index] do
       collection do
@@ -54,6 +55,7 @@ Rails.application.routes.draw do
   end
 
   resources :lures, only: %i[index create] do
+    get :catches, to: 'catches#lure_catches'
     collection do
       get :lure_types
     end

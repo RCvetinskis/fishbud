@@ -25,7 +25,10 @@ const FishingTripCard = ({ trip }: Props) => {
   );
 
   return (
-    <Card className="group relative flex h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card p-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5">
+    <Card
+      id={`fishing-trip-${trip.id}`}
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card p-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5"
+    >
       <div className="relative isolate h-28 overflow-hidden sm:h-32">
         <div className="absolute inset-0 bg-linear-to-br from-emerald-950 via-emerald-800 to-teal-700" />
         <div className="absolute -right-8 -top-12 size-36 rounded-full border border-white/10" />

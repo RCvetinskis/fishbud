@@ -3,8 +3,8 @@ require 'time'
 
 module WeatherServices
   class FetchForCatch
-    FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
-    ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive'
+    FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'.freeze
+    ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive'.freeze
 
     FORECAST_PAST_DAYS = 90
     FORECAST_FUTURE_DAYS = 15

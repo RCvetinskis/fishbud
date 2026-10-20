@@ -38,3 +38,9 @@ export const formatDuration = (startedAt: string, endedAt: string | null) => {
     ? `${hours} h ${remainingMinutes} min`
     : `${hours} h`;
 };
+
+export const formatNumber = (value: number) =>
+  new Intl.NumberFormat("lt-LT").format(value);
+
+export const formatRange = (min: string | number, max: string | number) =>
+  `${Number(min).toLocaleString("lt-LT")}–${Number(max).toLocaleString("lt-LT")}`;

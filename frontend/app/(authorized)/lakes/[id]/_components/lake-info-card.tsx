@@ -50,7 +50,7 @@ const LakeInfoCard = ({ lake }: Props) => {
                   href={coordinatesUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block max-w-45 truncate text-right text-primary underline underline-offset-4 hover:opacity-80"
+                  className="block max-w-45 truncate text-right"
                 >
                   {Number(lake.latitude).toFixed(5)},
                   {Number(lake.longitude).toFixed(5)}

@@ -38,7 +38,23 @@ export const getLakeCatches = async (
     };
   }
 };
+export const getLureCatches = async (
+  id: string,
+  params?: CatchSearchParams,
+): Promise<TCatchResult> => {
+  try {
+    const response = await api.get(`/lures/${id}/catches`, {
+      params,
+    });
 
+    return response.data.data;
+  } catch {
+    return {
+      result: [],
+      meta: null,
+    };
+  }
+};
 export type TLakeStatistics = {
   total_catches?: number;
   most_catches: {

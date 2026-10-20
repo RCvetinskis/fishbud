@@ -1,11 +1,11 @@
 module Catches
   class Search
-    def self.call(lake:, params:)
-      new(lake, params).call
+    def self.call(scope:, params:)
+      new(scope, params).call
     end
 
-    def initialize(lake, params)
-      @catches = lake.catches
+    def initialize(scope, params)
+      @catches = scope
       @params = params
     end
 

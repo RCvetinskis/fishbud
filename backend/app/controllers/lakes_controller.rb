@@ -7,17 +7,15 @@ class LakesController < ApplicationController
     lake = Lake
            .where(id: @lake.id)
            .select(
-             :id, :name, :area,
-             Arel.sql('ST_AsGeoJSON(ST_Transform(geometry, 4326)) AS geojson')
+             :id, :name, :area, :length, :width, :shoreline_length,
+             :latitude, :longitude, :geometry,
+             Arel.sql(
+               'ST_AsGeoJSON(ST_Transform(geometry, 4326)) AS geojson'
+             )
            )
            .first
 
-    render_success({
-                     id: lake.id,
-                     name: lake.name,
-                     area: lake.area,
-                     geometry: JSON.parse(lake.geojson)
-                   })
+    render_success(serialize_resource(lake, LakeSerializer))
   end
 
   def index

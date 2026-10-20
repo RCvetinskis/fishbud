@@ -46,6 +46,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-link: var(--link);
 }
 
 :root {
@@ -81,6 +82,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --link: var(--color-emerald-700);
 }
 
 .dark {
@@ -115,6 +117,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-icon-color: 142 71% 55%;
+  --link: var(--color-emerald-400);
 }
 .spot-popup .leaflet-popup-content-wrapper,
 .spot-popup .leaflet-popup-tip {
@@ -135,5 +139,19 @@
   }
   html {
     @apply font-sans;
+  }
+  a {
+    @apply !text-link transition-colors duration-150;
+  }
+
+  a:active {
+    @apply opacity-60;
+  }
+
+  a:focus-visible {
+    @apply rounded-sm outline-2 outline-offset-2 outline-ring;
+  }
+  .sidebar-icon {
+    @apply !text-link;
   }
 }

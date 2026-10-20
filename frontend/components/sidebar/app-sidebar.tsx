@@ -15,67 +15,105 @@ import { ThemeToggle } from "../theme-toggle";
 import {
   ChartColumn,
   ChartNoAxesColumn,
+  Cloudy,
   Fish,
+  FishingHook,
   Map,
   PersonStanding,
+  TentTree,
   TrendingUp,
 } from "lucide-react";
 import UserDropdown from "./user-dropdown";
 
 export function AppSidebar() {
+  const menuItems = [
+    {
+      label: "Map",
+      icon: <Map />,
+      href: "/map",
+    },
+    {
+      label: "Statistics",
+      icon: <ChartColumn />,
+      subItems: [
+        {
+          label: "Stats",
+          icon: <ChartNoAxesColumn className="sidebar-icon" />,
+          href: "/statistics",
+        },
+        {
+          label: "Weather Stats",
+          icon: <Cloudy className="sidebar-icon" />,
+          href: "/statistics/weather_statistics",
+        },
+        {
+          label: "Top Catches",
+          icon: <TrendingUp className="sidebar-icon" />,
+          href: "/statistics/top_catches",
+        },
+        {
+          label: "Top Fishing Trips",
+          icon: <TentTree className="sidebar-icon" />,
+          href: "/statistics/top_fishing_trips",
+        },
+        {
+          label: "Lure Statistics",
+          icon: <FishingHook className="sidebar-icon" />,
+          href: "/statistics/lure_statistics",
+        },
+      ],
+    },
+    {
+      label: "Profile",
+      icon: <PersonStanding className="sidebar-icon" />,
+      href: "/profile",
+    },
+  ];
+
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link href={"/"}>
-          <SidebarMenuButton>
-            <Fish /> <span>Fish Bud</span>
-          </SidebarMenuButton>
-        </Link>
+        <SidebarMenuButton render={<Link href="/" />}>
+          <Fish />
+          <span>Fish Bud</span>
+        </SidebarMenuButton>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <Link href={"/map"}>
-              {" "}
-              <SidebarMenuButton>
-                <Map />
-                <span>Map</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
+          {menuItems.map((item) => (
+            <SidebarMenuItem key={item.label}>
+              {item.href ? (
+                <SidebarMenuButton render={<Link href={item.href} />}>
+                  {item.icon}
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton>
+                  {item.icon}
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
+              )}
 
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <ChartColumn />
-              <span>Statistics</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub>
-              <SidebarMenuSubItem>
-                <SidebarMenuSubButton href={"/statistics"}>
-                  <ChartNoAxesColumn />
-                  Stats
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-
-              <SidebarMenuSubItem>
-                <SidebarMenuSubButton href={"/statistics/top_catches"}>
-                  <TrendingUp />
-                  Top Catches
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href={"/profile"}>
-              {" "}
-              <SidebarMenuButton>
-                <PersonStanding />
-                <span>Profile</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
+              {item.subItems && (
+                <SidebarMenuSub>
+                  {item.subItems.map((subItem) => (
+                    <SidebarMenuSubItem key={subItem.href}>
+                      <SidebarMenuSubButton
+                        render={<Link href={subItem.href} />}
+                      >
+                        {subItem.icon}
+                        <span>{subItem.label}</span>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ))}
+                </SidebarMenuSub>
+              )}
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
