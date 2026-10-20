@@ -12,17 +12,18 @@ module Statistics
     LIMIT = 25
 
     def initialize(period: DEFAULT_PERIOD, selected_fish: DEFAULT_FISH,
-                   current_user: nil, page: nil, selected_lure: nil)
+                   current_user: nil, page: nil, selected_lure: nil, sort_params: nil)
       @period        = PERIODS.key?(period) ? period : DEFAULT_PERIOD
       @selected_fish = normalize_fish(selected_fish)
       @current_user  = current_user
       @page          = page
       @selected_lure = selected_lure
+      @sort_params   = sort_params
     end
 
     private
 
-    attr_reader :period, :selected_fish, :current_user, :page, :selected_lure
+    attr_reader :period, :selected_fish, :current_user, :page, :selected_lure, :sort_params
 
     def normalize_fish(value)
       value.presence || DEFAULT_FISH

@@ -99,6 +99,7 @@ const PaginationContainer = ({
             variant="ghost"
             size="icon"
             aria-label="First page"
+            className="text-link"
             disabled={currentPage === 1}
             onClick={() => goToPage(1)}
           >
@@ -108,6 +109,7 @@ const PaginationContainer = ({
 
         <PaginationItem>
           <Button
+            className="text-link"
             variant="ghost"
             size="icon"
             aria-label="Previous page"
@@ -161,6 +163,7 @@ const PaginationContainer = ({
             variant="ghost"
             size="icon"
             aria-label="Next page"
+            className="text-link"
             disabled={currentPage === totalPages}
             onClick={() => goToPage(currentPage + 1)}
           >
@@ -170,8 +173,9 @@ const PaginationContainer = ({
 
         <PaginationItem>
           <Button
-            variant="ghost"
+            variant="link"
             size="icon"
+            className="text-link"
             aria-label="Last page"
             disabled={currentPage === totalPages}
             onClick={() => goToPage(totalPages)}

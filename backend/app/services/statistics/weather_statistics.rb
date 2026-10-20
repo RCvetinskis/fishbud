@@ -21,10 +21,17 @@ module Statistics
         Weather.all,
         column: 'observed_at'
       )
-      needs_catch_join = selected_fish != 'all'
+
+      needs_catch_join =
+        selected_fish != 'all' ||
+        current_user.present? ||
+        selected_lure.present?
+
       scope = scope.joins(:catch) if needs_catch_join
+
       scope = scope.where(catches: { fish_id: selected_fish }) if selected_fish != 'all'
-      scope = scope.joins(:catch).where(catches: { user_id: current_user.id }) if current_user
+
+      scope = scope.where(catches: { user_id: current_user.id }) if current_user.present?
 
       scope.pluck(:temperature, :wind_speed, :wind_direction, :pressure)
     end

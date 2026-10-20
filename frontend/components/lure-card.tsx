@@ -1,11 +1,11 @@
 "use client";
 
-import { TLure } from "@/types";
-import { Fish, ChevronDown, ChevronUp } from "lucide-react";
-import ShowMoreText from "./show-more-text";
+import { TCatchLure } from "@/types";
+import { Fish } from "lucide-react";
+import Link from "next/link";
 
 type Props = {
-  lure: TLure;
+  lure: TCatchLure;
 };
 
 const LureCard = ({ lure }: Props) => {
@@ -19,7 +19,12 @@ const LureCard = ({ lure }: Props) => {
         <div className="min-w-0 flex-1">
           <p className="text-[11px] text-muted-foreground">Lure / bait</p>
 
-          <p className="text-xs font-semibold wrap-break-word">{lure.name}</p>
+          <Link
+            href={`/statistics/lure_statistics/${lure.id}`}
+            className="text-xs font-semibold wrap-break-word"
+          >
+            {lure.name}
+          </Link>
         </div>
 
         <div className="min-w-0 flex-1">
@@ -29,8 +34,6 @@ const LureCard = ({ lure }: Props) => {
           </p>
         </div>
       </div>
-
-      {lure.description && <ShowMoreText text={lure.description} />}
     </div>
   );
 };

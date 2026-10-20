@@ -1,6 +1,6 @@
 class LakeSerializer < ActiveModel::Serializer
   attributes :id, :name, :area, :length, :width, :shoreline_length,
-             :latitude, :longitude
+             :latitude, :longitude, :geometry
 
   def shoreline_length
     object.shoreline_length&.round(2)
@@ -12,5 +12,9 @@ class LakeSerializer < ActiveModel::Serializer
 
   def width
     object.width&.round(2)
+  end
+
+  def geometry
+    JSON.parse(object.geojson) if object.geojson.present?
   end
 end

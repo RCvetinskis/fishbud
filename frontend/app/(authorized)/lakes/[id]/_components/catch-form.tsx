@@ -150,6 +150,7 @@ const CatchForm = ({ lake_id, fishing_trip_id, onSuccess }: Props) => {
                   <FieldLabel htmlFor="lure">Lure / bait (optional)</FieldLabel>
                   <div>
                     <SimpleCombobox
+                      className="sm:w-full"
                       items={selectItems}
                       value={field?.value || null}
                       onChange={field.onChange}

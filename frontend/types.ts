@@ -55,6 +55,7 @@ export type TCatch = {
   image_url?: string;
   lure?: TLure;
   description?: string;
+  lake_name?: string;
   weather?: TWeather;
 } & TCrudDate;
 
@@ -133,6 +134,11 @@ export type TLure = {
   description?: string;
 } & TCrudDate;
 
+export type TCatchLure = {
+  id: number;
+  name: string;
+  lure_type: TLureType;
+};
 export type TRailsSuccessResponse<T> = {
   data: T;
   error: false;

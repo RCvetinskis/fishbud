@@ -16,6 +16,7 @@ import LureCard from "@/components/lure-card";
 import ShowMoreText from "@/components/show-more-text";
 import WeatherCard from "@/components/weather-card";
 import ImageDialog from "@/components/image-dialog";
+import Link from "next/link";
 
 type Props = {
   catchData: TCatch;
@@ -28,7 +29,7 @@ const CatchCard = ({ catchData }: Props) => {
   return (
     <Card
       id={`catch-${catchData.id}`}
-      className="group relative flex p-0 h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5"
+      className="group relative flex p-0 h-full flex-col overflow-hidden rounded-xl border-border/60 bg-card shadow-sm transition-all duration-300  hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-950/5"
     >
       {/* Photo or decorative header */}
       <div className="relative isolate h-28 overflow-hidden rounded-t-xl sm:h-32 ">
@@ -160,17 +161,31 @@ const CatchCard = ({ catchData }: Props) => {
 
         {/* Weather conditions */}
         {catchData.weather && <WeatherCard weather={catchData.weather} />}
+
         {/* Footer */}
-        <div className="mt-auto flex items-center gap-1.5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
+        <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
           <CalendarDays className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span className="min-w-0 flex-1 truncate">
-            Caught {catchData.caught_at}
-          </span>
+
+          <span className="min-w-0 truncate">Caught {catchData.caught_at}</span>
+
+          {catchData.lake_id && catchData.lake_name && (
+            <>
+              <span aria-hidden="true">·</span>
+
+              <Link
+                href={`/lakes/${catchData.lake_id}`}
+                className="inline-flex min-w-0 items-center gap-1 truncate font-medium text-link hover:underline"
+              >
+                <Waves className="size-3 shrink-0" />
+                <span className="truncate">{catchData.lake_name}</span>
+              </Link>
+            </>
+          )}
 
           {catchData.updated_at !== catchData.created_at && (
             <Badge
               variant="outline"
-              className="shrink-0 px-1.5 py-0 text-[9px] font-normal"
+              className="ml-auto shrink-0 px-1.5 py-0 text-[9px] font-normal"
             >
               Edited
             </Badge>

@@ -5,12 +5,19 @@ import { isPeriod } from "../layout";
 import type { Period } from "@/stores/statistics-store";
 import { TPaginatedResponse } from "@/types";
 import { TLureStatisticsSummary } from "@/services/statistics-service";
-
 export type StatisticsSearchParams = {
   scope?: string;
   period?: string;
   fish_id?: string;
+  lure_id?: string;
   page?: string;
+  "sort_params[column]"?: string;
+  "sort_params[direction]"?: string;
+};
+
+export type TSortParams = {
+  column: string;
+  direction: "asc" | "desc";
 };
 
 export type TPaginationMeta = {
@@ -24,7 +31,9 @@ export type StatisticsFilters = {
   period: Period;
   scope: "mine" | "all";
   fishId: string | undefined;
+  lureId: string | undefined;
   page: number;
+  sortParams?: TSortParams;
 };
 type TStatisticsPaginatedResponse<T> = TPaginatedResponse<T> & {
   summary?: TLureStatisticsSummary | null;
@@ -72,7 +81,10 @@ const StatisticsPageShell = async <T,>({
     scope,
     period: requestedPeriod,
     fish_id,
+    lure_id,
     page: requestedPage,
+    "sort_params[column]": sortColumn,
+    "sort_params[direction]": sortDirection,
   } = await searchParams;
 
   const period: Period = isPeriod(requestedPeriod) ? requestedPeriod : "7d";
@@ -84,12 +96,25 @@ const StatisticsPageShell = async <T,>({
     period,
     scope: scopeValue,
     fishId,
+    lureId: lure_id?.trim() || undefined,
     page,
+    sortParams: sortColumn
+      ? {
+          column: sortColumn,
+          direction: sortDirection === "desc" ? "desc" : "asc",
+        }
+      : undefined,
   };
 
-  const filtersKey = useFishFilter
-    ? `${period}-${scopeValue}-${fishId ?? "all"}-${page}`
-    : `${period}-${scopeValue}-${page}`;
+  const filtersKey = [
+    period,
+    scopeValue,
+    fishId ?? "all",
+    lure_id ?? "all",
+    page,
+    sortColumn ?? "catches_count",
+    sortDirection ?? "desc",
+  ].join("-");
 
   async function Content() {
     const result = await fetchData(filters);

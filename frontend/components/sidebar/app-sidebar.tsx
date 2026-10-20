@@ -38,34 +38,34 @@ export function AppSidebar() {
       subItems: [
         {
           label: "Stats",
-          icon: <ChartNoAxesColumn />,
+          icon: <ChartNoAxesColumn className="sidebar-icon" />,
           href: "/statistics",
         },
         {
           label: "Weather Stats",
-          icon: <Cloudy />,
+          icon: <Cloudy className="sidebar-icon" />,
           href: "/statistics/weather_statistics",
         },
         {
           label: "Top Catches",
-          icon: <TrendingUp />,
+          icon: <TrendingUp className="sidebar-icon" />,
           href: "/statistics/top_catches",
         },
         {
           label: "Top Fishing Trips",
-          icon: <TentTree />,
+          icon: <TentTree className="sidebar-icon" />,
           href: "/statistics/top_fishing_trips",
         },
         {
           label: "Lure Statistics",
-          icon: <FishingHook />,
+          icon: <FishingHook className="sidebar-icon" />,
           href: "/statistics/lure_statistics",
         },
       ],
     },
     {
       label: "Profile",
-      icon: <PersonStanding />,
+      icon: <PersonStanding className="sidebar-icon" />,
       href: "/profile",
     },
   ];

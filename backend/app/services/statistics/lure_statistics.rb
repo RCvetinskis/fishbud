@@ -1,8 +1,17 @@
 module Statistics
   class LureStatistics < BaseService
+    SORT_COLUMNS = {
+      'catches_count' => Arel.sql('COUNT(*)'),
+      'lure' => 'lures.name',
+      'fish_name' => 'fish.name'
+    }.freeze
+
+    DEFAULT_SORT = 'catches_count'.freeze
+    DEFAULT_DIRECTION = 'desc'.freeze
+
     def call
       {
-        items: most_catches_by_lure,
+        items: result,
         summary: summary,
         pagination: pagination
       }
@@ -18,8 +27,39 @@ module Statistics
 
       scope = scope.where(fish_id: selected_fish) if selected_fish != 'all'
       scope = scope.where(user_id: current_user.id) if current_user
+      scope = scope.where(lure_id: selected_lure) if selected_lure != 'all'
 
       scope
+    end
+
+    def grouped_relation
+      filtered_catches
+        .joins(:lure, :fish)
+        .group('lures.id', 'lures.name', 'fish.name')
+    end
+
+    def sorted_relation
+      params = sort_params || {}
+
+      column = params[:column].presence ||
+               params['column'].presence ||
+               params[:sort_by].presence ||
+               params['sort_by'].presence ||
+               DEFAULT_SORT
+
+      direction = params[:direction].presence ||
+                  params['direction'].presence ||
+                  DEFAULT_DIRECTION
+
+      column = column.to_s
+      direction = direction.to_s.downcase
+
+      column = DEFAULT_SORT unless SORT_COLUMNS.key?(column)
+      direction = 'desc' unless %w[asc desc].include?(direction)
+
+      grouped_relation.order(
+        SORT_COLUMNS.fetch(column) => direction
+      )
     end
 
     def summary
@@ -32,38 +72,28 @@ module Statistics
       }
     end
 
-    def most_catches_by_lure
-      relation = filtered_catches
-                 .joins(:lure, :fish)
-                 .group('lures.name', 'fish.name')
-
-      relation.count.size
-
-      paginated = relation
-                  .order(Arel.sql('COUNT(*) DESC'))
-                  .limit(LIMIT)
-                  .offset((page.to_i - 1) * LIMIT)
-                  .pluck(
-                    'lures.name',
-                    'fish.name',
-                    Arel.sql('COUNT(*)')
-                  )
-
-      paginated.map do |lure, fish_name, count|
-        {
-          lure: lure,
-          fish_name: fish_name,
-          catches_count: count.to_i
-        }
-      end
+    def result
+      sorted_relation
+        .limit(LIMIT)
+        .offset((page.to_i - 1) * LIMIT)
+        .pluck(
+          'lures.name',
+          'fish.name',
+          'lures.id',
+          Arel.sql('COUNT(*)')
+        )
+        .map do |lure, fish_name, lure_id, count|
+          {
+            lure: lure,
+            fish_name: fish_name,
+            lure_id: lure_id,
+            catches_count: count.to_i
+          }
+        end
     end
 
     def pagination
-      relation = filtered_catches
-                 .joins(:lure, :fish)
-                 .group('lures.name', 'fish.name')
-
-      total_count = relation.count.size
+      total_count = grouped_relation.count.size
 
       {
         current_page: page.to_i,

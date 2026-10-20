@@ -1,8 +1,10 @@
+import { TSortParams } from "@/app/(authorized)/statistics/_components/statistics-page-shell";
 import { api } from "@/handlers/api-handler";
 import { Period } from "@/stores/statistics-store";
 import {
   TCatch,
   TCrudDate,
+  TLure,
   TMeta,
   TPaginatedResponse,
   TWeatherStatistics,
@@ -191,6 +193,7 @@ export type TLureStatistic = {
   lure: string;
   catches_count: number;
   fish_name: string;
+  lure_id: number;
 };
 export type TLureStatisticsSummary = {
   recorded_catches: number;
@@ -204,7 +207,9 @@ export const getLureStatistics = async (
   period: Period = "7d",
   scope: TScope,
   fish_id: string = "all",
+  lure_id: string = "all",
   page: number = 1,
+  sortParams?: TSortParams,
 ): Promise<TLureStatisticsResponse> => {
   try {
     const cookieStore = await cookies();
@@ -215,7 +220,9 @@ export const getLureStatistics = async (
         period,
         scope,
         fish_id,
+        lure_id,
         page: String(page),
+        sort_params: sortParams,
       },
       headers: { Cookie: cookieHeader },
     });
@@ -234,5 +241,38 @@ export const getLureStatistics = async (
       meta: null,
       summary: null,
     };
+  }
+};
+
+export type TLureStatsInsight = {
+  id: number;
+  name: string;
+  total_catches: number;
+  description?: string;
+  most_common_fish: {
+    id: number;
+    name: string;
+    catches_count: number;
+  } | null;
+  most_common_weather: {
+    temperature_min: string | number;
+    temperature_max: string | number;
+    pressure_min: string | number;
+    pressure_max: string | number;
+    wind_direction: string;
+    catches_count: number;
+  } | null;
+};
+
+export const getLureStatisticById = async (
+  id: number | string,
+): Promise<TLureStatsInsight | null> => {
+  try {
+    console.log("id", id);
+    const response = await api.get(`statistics/lures/${id}`);
+
+    return response.data.data;
+  } catch (error) {
+    return null;
   }
 };

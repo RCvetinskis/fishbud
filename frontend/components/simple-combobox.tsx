@@ -8,22 +8,29 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
+import { cn } from "@/lib/utils";
 import { TSelectItem } from "@/types";
 
 type Props = {
   items: TSelectItem[];
   value: string | number | null;
+  loading?: boolean;
   onChange: (value: string | null) => void;
   children?: React.ReactNode;
   placeholder?: string;
+  className?: string;
+  showClear?: boolean;
 };
 
 const SimpleCombobox = ({
   items,
   value,
+  loading = false,
   onChange,
   children,
+  className,
   placeholder = "Select an item",
+  showClear = false,
 }: Props) => {
   const selectedItem =
     items.find((item) => String(item.value) === value) ?? null;
@@ -37,7 +44,12 @@ const SimpleCombobox = ({
         onChange(item ? String(item.value) : null);
       }}
     >
-      <ComboboxInput placeholder={placeholder} />
+      <ComboboxInput
+        disabled={loading}
+        showClear={showClear}
+        className={cn("w-full sm:w-44", className)}
+        placeholder={placeholder}
+      />
 
       <ComboboxContent>
         {children}

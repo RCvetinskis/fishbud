@@ -1,7 +1,7 @@
 import MapWrapper from "@/components/map/map-wrapper";
 import { getLakeById, getLakeStatistics } from "@/services/lake-service";
 import LakeInfoCard from "./_components/lake-info-card";
-import CatchList from "./_components/catch-list";
+import CatchList from "../../../../components/catches/catch-list";
 import LakeStatistics from "./_components/lake_statistics";
 import { Card } from "@/components/ui/card";
 import FishingTripStatuts from "./_components/fishing-trip-statuts";

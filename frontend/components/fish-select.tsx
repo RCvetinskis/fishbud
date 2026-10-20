@@ -73,7 +73,7 @@ const FishSelect = ({
     } else {
       params.set(paramName, String(fishId));
     }
-    params.delete("page"); // 👈 reset pagination
+    params.delete("page");
 
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });

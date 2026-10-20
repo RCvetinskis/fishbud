@@ -1,18 +1,20 @@
 import PaginationContainer from "@/components/pagination-container";
 import CatchCard from "./catch-card";
-import { getLakeCatches } from "@/services/lake-service";
+import { getLakeCatches, getLureCatches } from "@/services/lake-service";
 import EmptyState from "@/components/empty-state";
-import CatchesFilter from "./filters/catches-filter";
-import CatchDrawer from "./catch-drawer";
+import CatchesFilter from "../../app/(authorized)/lakes/[id]/_components/filters/catches-filter";
+import CatchDrawer from "../../app/(authorized)/lakes/[id]/_components/catch-drawer";
 import { Card } from "@/components/ui/card";
 
 type Props = {
-  lakeId: string;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  lakeId?: string;
+  lureId?: string;
 };
 
-const CatchList = async ({ lakeId, searchParams }: Props) => {
+const CatchList = async ({ lakeId, lureId, searchParams }: Props) => {
   const query = await searchParams;
+
   const catchesParams = {
     date_from:
       typeof query.date_from === "string" ? query.date_from : undefined,
@@ -22,14 +24,21 @@ const CatchList = async ({ lakeId, searchParams }: Props) => {
     fish_id: typeof query.fish_id === "string" ? query.fish_id : undefined,
   };
 
-  const data = await getLakeCatches(lakeId, catchesParams);
+  const data = lakeId
+    ? await getLakeCatches(lakeId, catchesParams)
+    : lureId
+      ? await getLureCatches(lureId, catchesParams)
+      : null;
+
+  if (!data) return <EmptyState />;
 
   return (
     <div className="space-y-4">
       <Card>
         <CatchesFilter />
-        <CatchDrawer lake_id={lakeId} />
+        {lakeId && <CatchDrawer lake_id={lakeId} />}
       </Card>
+
       {data.result.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {data.result.map((item) => (
